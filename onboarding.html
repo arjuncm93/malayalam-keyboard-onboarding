@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Keyboard Setup</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  background: #fff;
+  min-height: 100vh;
+  color: #111;
+  overflow-x: hidden;
+}
+
+/* ── Slides ── */
+.slide {
+  display: none;
+  max-width: 390px;
+  margin: 0 auto;
+  min-height: 100vh;
+  flex-direction: column;
+  padding: 60px 24px 0;
+  background: #fff;
+}
+
+.slide.active {
+  display: flex;
+}
+
+.slide.slide-in {
+  animation: slideIn 0.38s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Step dots ── */
+.step-dots {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 32px;
+}
+
+.dot {
+  height: 6px;
+  border-radius: 3px;
+  background: #e0e0e0;
+  transition: background 0.25s, width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 6px;
+}
+
+.dot.active {
+  background: #111;
+  width: 22px;
+}
+
+/* ── Header ── */
+.header { margin-bottom: 36px; }
+
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  color: #111;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: #999;
+  margin-top: 6px;
+}
+
+/* ── Section label ── */
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+/* ── Feature card ── */
+.feat-card {
+  border: 1.5px solid #e8e8e8;
+  border-radius: 20px;
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.12s;
+  position: relative;
+}
+
+.feat-card:active { transform: scale(0.99); }
+.feat-card.selected { border-color: #111; }
+
+/* ── Keyboard (large) ── */
+.kb {
+  border-radius: 12px;
+  padding: 10px 8px 11px;
+  margin-bottom: 14px;
+  user-select: none;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+.row:last-child { margin-bottom: 0; }
+
+.k {
+  flex: 1;
+  max-width: 31px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.k-main { font-size: 13px; font-weight: 500; line-height: 1; }
+.k-hint { font-size: 6px; line-height: 1; }
+
+.k.fn {
+  max-width: none;
+  flex: 1.6;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* ── Keyboard color themes ── */
+.kb-dark { background: #111; }
+.kb-dark .k { background: #2a2a2a; color: #fff; box-shadow: 0 2px 0 #000; }
+.kb-dark .k-hint { color: rgba(255,255,255,0.3); }
+.kb-dark .k.fn { background: #222; color: rgba(255,255,255,0.7); }
+
+.kb-light { background: #ADB5BD; }
+.kb-light .k { background: #fff; color: #111; box-shadow: 0 2px 0 #888; }
+.kb-light .k-hint { color: rgba(0,0,0,0.3); }
+.kb-light .k.fn { background: #c5cdd6; color: #555; }
+
+.kb-sand { background: #B8895A; }
+.kb-sand .k { background: #EDD9BD; color: #2A1A0A; box-shadow: 0 2px 0 #7a5a35; }
+.kb-sand .k-hint { color: rgba(42,26,10,0.38); }
+.kb-sand .k.fn { background: #c89a6a; color: rgba(42,26,10,0.65); }
+
+.kb-midnight { background: #0D1B3E; }
+.kb-midnight .k { background: #1E3160; color: #e8efff; box-shadow: 0 2px 0 #050d20; }
+.kb-midnight .k-hint { color: rgba(232,239,255,0.3); }
+.kb-midnight .k.fn { background: #162548; color: rgba(232,239,255,0.6); }
+
+/* ── Card bottom row ── */
+.card-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-name { font-size: 15px; font-weight: 600; color: #111; }
+.card-sub  { font-size: 13px; color: #999; margin-top: 1px; }
+.card-text { flex: 1; }
+
+.chk {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #111;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: scale(0.3);
+  transition: opacity 0.18s, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+}
+.chk svg { width: 10px; height: 10px; }
+.selected .chk { opacity: 1; transform: scale(1); }
+
+/* ── Example bar ── */
+.example {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  background: #f5f5f5;
+  border-radius: 10px;
+}
+
+.ex-src   { font-size: 13px; color: #aaa; font-weight: 500; }
+.ex-arrow { font-size: 13px; color: #111; font-weight: 700; }
+.ex-dst   { font-size: 15px; color: #111; font-weight: 600; }
+
+/* ── Grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.opt-card {
+  border: 1.5px solid #e8e8e8;
+  border-radius: 18px;
+  padding: 13px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.12s;
+  position: relative;
+}
+
+.opt-card:active { transform: scale(0.97); }
+.opt-card.selected { border-color: #111; }
+
+/* ── Small keyboard ── */
+.kb-sm {
+  border-radius: 9px;
+  padding: 7px 6px;
+  margin-bottom: 11px;
+}
+
+.row-sm {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 3px;
+}
+.row-sm:last-child { margin-bottom: 0; }
+
+.k-sm {
+  flex: 1;
+  height: 22px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8.5px;
+}
+.k-sm.fn { flex: 1.5; }
+
+.kb-sm-dark { background: #111; }
+.kb-sm-dark .k-sm { background: #2a2a2a; color: #fff; box-shadow: 0 1px 0 #000; }
+.kb-sm-dark .k-sm.fn { background: #222; }
+
+.kb-sm-light { background: #ADB5BD; }
+.kb-sm-light .k-sm { background: #fff; color: #111; box-shadow: 0 1px 0 #888; }
+.kb-sm-light .k-sm.fn { background: #c5cdd6; }
+
+.kb-sm-sand { background: #B8895A; }
+.kb-sm-sand .k-sm { background: #EDD9BD; color: #2A1A0A; box-shadow: 0 1px 0 #7a5a35; }
+.kb-sm-sand .k-sm.fn { background: #c89a6a; }
+
+.kb-sm-midnight { background: #0D1B3E; }
+.kb-sm-midnight .k-sm { background: #1E3160; color: #e8efff; box-shadow: 0 1px 0 #050d20; }
+.kb-sm-midnight .k-sm.fn { background: #162548; }
+
+/* ── Handwriting preview ── */
+.hw {
+  background: #111;
+  border-radius: 9px;
+  height: 72px;
+  margin-bottom: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hw-char { font-size: 34px; color: rgba(255,255,255,0.9); line-height: 1; }
+.hw-icon { position: absolute; bottom: 9px; right: 10px; font-size: 13px; opacity: 0.35; }
+
+.opt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.opt-name { font-size: 14px; font-weight: 600; color: #111; }
+.opt-sub  { font-size: 12px; color: #999; }
+
+/* ── Spacer & footer ── */
+.spacer { flex: 1; min-height: 20px; }
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  padding: 8px 0 40px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, #fff 28%);
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #bbb;
+  margin-bottom: 14px;
+}
+
+.cta {
+  width: 100%;
+  padding: 17px;
+  background: #111;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  letter-spacing: -0.2px;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.cta:hover { background: #222; }
+.cta:active { transform: scale(0.985); background: #000; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1 — Choose typing style
+     ══════════════════════════════════════ -->
+<div class="slide active" id="slide-1">
+
+  <div class="step-dots">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+  </div>
+
+  <div class="header">
+    <h1>Choose your<br>typing style</h1>
+    <div class="subtitle">You can change this anytime</div>
+  </div>
+
+  <div class="label">Recommended</div>
+
+  <!-- Manglish -->
+  <div class="feat-card selected" id="card-manglish" onclick="pickLayout('manglish')">
+
+    <div class="kb kb-dark">
+      <div class="row">
+        <div class="k"><span class="k-main">q</span><span class="k-hint">ക്യ</span></div>
+        <div class="k"><span class="k-main">w</span><span class="k-hint">വ</span></div>
+        <div class="k"><span class="k-main">e</span><span class="k-hint">എ</span></div>
+        <div class="k"><span class="k-main">r</span><span class="k-hint">ര</span></div>
+        <div class="k"><span class="k-main">t</span><span class="k-hint">ത</span></div>
+        <div class="k"><span class="k-main">y</span><span class="k-hint">യ</span></div>
+        <div class="k"><span class="k-main">u</span><span class="k-hint">ഉ</span></div>
+        <div class="k"><span class="k-main">i</span><span class="k-hint">ഇ</span></div>
+        <div class="k"><span class="k-main">o</span><span class="k-hint">ഒ</span></div>
+        <div class="k"><span class="k-main">p</span><span class="k-hint">പ</span></div>
+      </div>
+      <div class="row">
+        <div class="k"><span class="k-main">a</span><span class="k-hint">അ</span></div>
+        <div class="k"><span class="k-main">s</span><span class="k-hint">സ</span></div>
+        <div class="k"><span class="k-main">d</span><span class="k-hint">ദ</span></div>
+        <div class="k"><span class="k-main">f</span><span class="k-hint">ഫ</span></div>
+        <div class="k"><span class="k-main">g</span><span class="k-hint">ഗ</span></div>
+        <div class="k"><span class="k-main">h</span><span class="k-hint">ഹ</span></div>
+        <div class="k"><span class="k-main">j</span><span class="k-hint">ജ</span></div>
+        <div class="k"><span class="k-main">k</span><span class="k-hint">ക</span></div>
+        <div class="k"><span class="k-main">l</span><span class="k-hint">ല</span></div>
+      </div>
+      <div class="row">
+        <div class="k fn">⇧</div>
+        <div class="k"><span class="k-main">z</span><span class="k-hint">സ</span></div>
+        <div class="k"><span class="k-main">x</span><span class="k-hint">ക്ഷ</span></div>
+        <div class="k"><span class="k-main">c</span><span class="k-hint">ച</span></div>
+        <div class="k"><span class="k-main">v</span><span class="k-hint">വ</span></div>
+        <div class="k"><span class="k-main">b</span><span class="k-hint">ബ</span></div>
+        <div class="k"><span class="k-main">n</span><span class="k-hint">ന</span></div>
+        <div class="k"><span class="k-main">m</span><span class="k-hint">മ</span></div>
+        <div class="k fn">⌫</div>
+      </div>
+    </div>
+
+    <div class="card-row">
+      <div class="card-text">
+        <div class="card-name">Manglish</div>
+        <div class="card-sub">Type English, get Malayalam</div>
+      </div>
+      <div class="chk">
+        <svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <div class="example">
+      <span class="ex-src">namaskaram</span>
+      <span class="ex-arrow">→</span>
+      <span class="ex-dst">നമസ്കാരം</span>
+    </div>
+
+  </div>
+
+  <!-- Grid options -->
+  <div class="grid">
+
+    <div class="opt-card" id="card-handwriting" onclick="pickLayout('handwriting')">
+      <div class="hw">
+        <div class="hw-char">മ</div>
+        <div class="hw-icon">✏️</div>
+      </div>
+      <div class="opt-row">
+        <div class="opt-name">Handwriting</div>
+        <div class="chk">
+          <svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="opt-sub">Draw characters</div>
+    </div>
+
+    <div class="opt-card" id="card-native" onclick="pickLayout('native')">
+      <div class="kb-sm kb-sm-dark">
+        <div class="row-sm">
+          <div class="k-sm">അ</div>
+          <div class="k-sm">ആ</div>
+          <div class="k-sm">ഇ</div>
+          <div class="k-sm">ഈ</div>
+          <div class="k-sm">ഉ</div>
+        </div>
+        <div class="row-sm">
+          <div class="k-sm">ക</div>
+          <div class="k-sm">ഖ</div>
+          <div class="k-sm">ഗ</div>
+          <div class="k-sm">ഘ</div>
+          <div class="k-sm">ച</div>
+        </div>
+        <div class="row-sm">
+          <div class="k-sm fn">⇧</div>
+          <div class="k-sm">ന</div>
+          <div class="k-sm">മ</div>
+          <div class="k-sm">ര</div>
+          <div class="k-sm fn">⌫</div>
+        </div>
+      </div>
+      <div class="opt-row">
+        <div class="opt-name">Malayalam</div>
+        <div class="chk">
+          <svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="opt-sub">Native script keys</div>
+    </div>
+
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="footer">
+    <div class="hint">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="16" x2="12" y2="12"/>
+        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      </svg>
+      Settings → Keyboard to change later
+    </div>
+    <button class="cta" onclick="goToScreen(2)">Continue</button>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════
+     SCREEN 2 — Choose keyboard theme
+     ══════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+
+  <div class="step-dots">
+    <div class="dot"></div>
+    <div class="dot active"></div>
+  </div>
+
+  <div class="header">
+    <h1>Pick your<br>keyboard look</h1>
+    <div class="subtitle">Make it yours</div>
+  </div>
+
+  <div class="label">Recommended</div>
+
+  <!-- Dark (featured) -->
+  <div class="feat-card selected" id="theme-dark" onclick="pickTheme('dark')">
+
+    <div class="kb kb-dark">
+      <div class="row">
+        <div class="k"><span class="k-main">q</span><span class="k-hint">ക്യ</span></div>
+        <div class="k"><span class="k-main">w</span><span class="k-hint">വ</span></div>
+        <div class="k"><span class="k-main">e</span><span class="k-hint">എ</span></div>
+        <div class="k"><span class="k-main">r</span><span class="k-hint">ര</span></div>
+        <div class="k"><span class="k-main">t</span><span class="k-hint">ത</span></div>
+        <div class="k"><span class="k-main">y</span><span class="k-hint">യ</span></div>
+        <div class="k"><span class="k-main">u</span><span class="k-hint">ഉ</span></div>
+        <div class="k"><span class="k-main">i</span><span class="k-hint">ഇ</span></div>
+        <div class="k"><span class="k-main">o</span><span class="k-hint">ഒ</span></div>
+        <div class="k"><span class="k-main">p</span><span class="k-hint">പ</span></div>
+      </div>
+      <div class="row">
+        <div class="k"><span class="k-main">a</span><span class="k-hint">അ</span></div>
+        <div class="k"><span class="k-main">s</span><span class="k-hint">സ</span></div>
+        <div class="k"><span class="k-main">d</span><span class="k-hint">ദ</span></div>
+        <div class="k"><span class="k-main">f</span><span class="k-hint">ഫ</span></div>
+        <div class="k"><span class="k-main">g</span><span class="k-hint">ഗ</span></div>
+        <div class="k"><span class="k-main">h</span><span class="k-hint">ഹ</span></div>
+        <div class="k"><span class="k-main">j</span><span class="k-hint">ജ</span></div>
+        <div class="k"><span class="k-main">k</span><span class="k-hint">ക</span></div>
+        <div class="k"><span class="k-main">l</span><span class="k-hint">ല</span></div>
+      </div>
+      <div class="row">
+        <div class="k fn">⇧</div>
+        <div class="k"><span class="k-main">z</span></div>
+        <div class="k"><span class="k-main">x</span></div>
+        <div class="k"><span class="k-main">c</span></div>
+        <div class="k"><span class="k-main">v</span></div>
+        <div class="k"><span class="k-main">b</span></div>
+        <div class="k"><span class="k-main">n</span></div>
+        <div class="k"><span class="k-main">m</span></div>
+        <div class="k fn">⌫</div>
+      </div>
+    </div>
+
+    <div class="card-row">
+      <div class="card-text">
+        <div class="card-name">Dark</div>
+        <div class="card-sub">Crisp keys, easy on the eyes</div>
+      </div>
+      <div class="chk">
+        <svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Theme grid -->
+  <div class="grid">
+
+    <!-- Light -->
+    <div class="opt-card" id="theme-light" onclick="pickTheme('light')">
+      <div class="kb-sm kb-sm-light">
+        <div class="row-sm">
+          <div class="k-sm">q</div>
+          <div class="k-sm">w</div>
+          <div class="k-sm">e</div>
+          <div class="k-sm">r</div>
+          <div class="k-sm">t</div>
+        </div>
+        <div class="row-sm">
+          <div class="k-sm">a</div>
+          <div class="k-sm">s</div>
+          <div class="k-sm">d</div>
+          <div class="k-sm">f</div>
+          <div class="k-sm">g</div>
+        </div>
+        <div class="row-sm">
+          <div class="k-sm fn">⇧</div>
+          <div class="k-sm">z</div>
+          <div class="k-sm">x</div>
+          <div class="k-sm">c</div>
+          <div class="k-sm fn">⌫</div>
+        </div>
+      </div>
+      <div class="opt-row">
+        <div class="opt-name">Light</div>
+        <div class="chk">
+          <svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="opt-sub">Clean & bright</div>
+    </div>
+
+    <!-- Sand -->
+    <div class="opt-card" id="theme-sand" onclick="pickTheme('sand')">
+      <div class="kb-sm kb-sm-sand">
+        <div class="row-sm">
+          <div class="k-sm">q</div>
+          <div class="k-sm">w</div>
+          <div class="k-sm">e</div>
+          <div class="k-sm">r</div>
+          <div class="k-sm">t</div>
+        </div>
+        <div class="row-sm">
+          <div class="k-sm">a</div>
+          <div class="k-sm">s</div>
+          <div class="k-sm">d</div>
+          <div class="k-sm">f</div>
+          <div class="k-sm">g</div>
+        </div>
+        <div class="row-sm">
+          <div class="k-sm fn">⇧</div>
+          <div class="k-sm">z</div>
+          <div class="k-sm">x</div>
+          <div class="k-sm">c</div>
+          <div class="k-sm fn">⌫</div>
+        </div>
+      </div>
+      <div class="opt-row">
+        <div class="opt-name">Sand</div>
+        <div class="chk">
+          <svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="opt-sub">Warm & earthy</div>
+    </div>
+
+    <!-- Midnight -->
+    <div class="opt-card" id="theme-midnight" onclick="pickTheme('midnight')">
+      <div class="kb-sm kb-sm-midnight">
+        <div class="row-sm">
+          <div class="k-sm">q</div>
+          <div class="k-sm">w</div>
+          <div class="k-sm">e</div>
+          <div class="k-sm">r</div>
+          <div class="k-sm">t</div>
+        </div>
+        <div class="row-sm">
+          <div class="k-sm">a</div>
+          <div class="k-sm">s</div>
+          <div class="k-sm">d</div>
+          <div class="k-sm">f</div>
+          <div class="k-sm">g</div>
+        </div>
+        <div class="row-sm">
+          <div class="k-sm fn">⇧</div>
+          <div class="k-sm">z</div>
+          <div class="k-sm">x</div>
+          <div class="k-sm">c</div>
+          <div class="k-sm fn">⌫</div>
+        </div>
+      </div>
+      <div class="opt-row">
+        <div class="opt-name">Midnight</div>
+        <div class="chk">
+          <svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="opt-sub">Deep & focused</div>
+    </div>
+
+    <!-- More coming -->
+    <div class="opt-card" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:default; border-style: dashed;">
+      <div style="font-size:22px; opacity:0.25;">+</div>
+      <div class="opt-name" style="color:#bbb; font-size:13px;">More soon</div>
+    </div>
+
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="footer">
+    <div class="hint">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="16" x2="12" y2="12"/>
+        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      </svg>
+      More themes in Settings
+    </div>
+    <button class="cta" id="cta-s2">Start typing</button>
+  </div>
+
+</div>
+
+
+<script>
+// ── Screen navigation ──
+function goToScreen(n) {
+  const next = document.getElementById('slide-' + n);
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active', 'slide-in'));
+  next.classList.add('active', 'slide-in');
+  next.addEventListener('animationend', () => next.classList.remove('slide-in'), { once: true });
+  window.scrollTo(0, 0);
+}
+
+// ── Screen 1: Layout picker ──
+let currentLayout = 'manglish';
+
+function pickLayout(id) {
+  if (currentLayout === id) return;
+  document.querySelectorAll('#slide-1 .feat-card, #slide-1 .opt-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('card-' + id).classList.add('selected');
+  currentLayout = id;
+}
+
+// ── Screen 2: Theme picker ──
+let currentTheme = 'dark';
+
+function pickTheme(id) {
+  if (currentTheme === id) return;
+  document.querySelectorAll('#slide-2 .feat-card, #slide-2 .opt-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('theme-' + id).classList.add('selected');
+  currentTheme = id;
+}
+</script>
+
+</body>
+</html>
