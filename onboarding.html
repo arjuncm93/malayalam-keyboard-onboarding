@@ -96,18 +96,61 @@ h1 {
   margin-bottom: 10px;
 }
 
-/* ── Feature card ── */
+/* ── Shimmer + card reveal ── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.card-reveal {
+  opacity: 0;
+  animation: cardReveal 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+/* Shimmer wrapper — stacks shimmer behind card */
+.card-wrap {
+  display: grid;
+}
+.card-wrap > * {
+  grid-area: 1 / 1;
+}
+.card-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--s1) 25%,
+    rgba(255,255,255,0.10) 50%,
+    var(--s1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.card-shimmer.show { opacity: 1; }
+.card-shimmer.sm { border-radius: 14px; }
+.card-shimmer.fade { opacity: 0; }
+
+/* ── Feature card (recommended) ── */
 .feat-card {
   background: var(--s1);
   border-radius: 16px;
-  padding: 16px;
+  padding: 18px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.12s;
+  transition: background 0.2s, transform 0.12s, border-color 0.2s;
   position: relative;
+  border: 1.5px solid rgba(69,163,117,0.25);
+  box-shadow: 0 0 20px rgba(69,163,117,0.08), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
 .feat-card:active { transform: scale(0.99); }
-.feat-card.selected { background: var(--s2); }
+.feat-card.selected {
+  background: var(--s2);
+  border-color: var(--accent);
+  box-shadow: 0 0 24px rgba(69,163,117,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
+}
 
 /* ── Grid ── */
 .grid {
@@ -122,26 +165,35 @@ h1 {
   border-radius: 14px;
   padding: 12px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.12s;
+  transition: background 0.2s, transform 0.12s, border-color 0.2s;
   position: relative;
+  border: 1.5px solid rgba(255,255,255,0.06);
 }
 
 .opt-card:active { transform: scale(0.97); }
-.opt-card.selected { background: var(--s2); }
+.opt-card.selected {
+  background: var(--s2);
+  border-color: var(--accent);
+}
 
-/* ── Checkmark ── */
+/* ── Radio button ── */
 .chk {
   width: 20px; height: 20px;
   border-radius: 50%;
-  background: var(--accent);
+  border: 2px solid rgba(255,255,255,0.25);
+  background: transparent;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
-  opacity: 0;
-  transform: scale(0.3);
-  transition: opacity 0.18s, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
 }
-.chk svg { width: 9px; height: 9px; }
-.selected .chk { opacity: 1; transform: scale(1); }
+.chk svg { width: 9px; height: 9px; opacity: 0; transition: opacity 0.2s; }
+.selected .chk {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 0 3px rgba(69,163,117,0.2);
+}
+.selected .chk svg { opacity: 1; }
 
 /* ── Keyboards (large) ── */
 .kb {
@@ -271,7 +323,7 @@ h1 {
   padding: 10px 14px;
   background: var(--s1);
   border-radius: 10px;
-  min-height: 42px;
+  height: 42px;
   overflow: hidden;
 }
 
@@ -305,10 +357,12 @@ h1 {
   font-weight: 700;
   flex-shrink: 0;
   transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), opacity 0.18s;
+  visibility: hidden;
   opacity: 0;
 }
 
 .trans-arrow.active {
+  visibility: visible;
   opacity: 1;
   transform: scale(1.35);
 }
@@ -317,15 +371,28 @@ h1 {
   font-size: 15px;
   color: var(--t1);
   font-weight: 600;
+  visibility: hidden;
   opacity: 0;
   transform: translateY(5px);
-  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.34,1.56,0.64,1), visibility 0s 0.28s;
   white-space: nowrap;
 }
 
 .trans-dst.show {
+  visibility: visible;
   opacity: 1;
   transform: translateY(0);
+  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.34,1.56,0.64,1), visibility 0s;
+}
+
+/* ── Voice card icon ── */
+.voice-icon {
+  background: var(--s1);
+  border-radius: 8px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ── Handwriting preview ── */
@@ -442,7 +509,13 @@ h1 {
   position: sticky;
   bottom: 0;
   padding: 12px 0 44px;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.3s ease;
+}
+.footer.active {
   background: linear-gradient(to bottom, transparent 0%, var(--bg) 36%);
+  pointer-events: auto;
 }
 
 .hint {
@@ -576,7 +649,7 @@ h1 {
 .kb-collapsible.hidden  { max-height: 0;    opacity: 0; }
 
 /* ── Screens with pinned keyboard panel ── */
-#slide-1, #slide-3 {
+#slide-3, #slide-5 {
   padding: 0;
   height: 100vh;
   overflow: hidden;
@@ -585,7 +658,7 @@ h1 {
 .s1-scroll, .s3-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 60px 20px 24px;
+  padding: 60px 20px 80px;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -598,7 +671,13 @@ h1 {
   max-width: 390px;
   z-index: 50;
   padding: 0 20px 40px;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.3s ease;
+}
+.kb-panel.active {
   background: var(--bg);
+  pointer-events: auto;
 }
 
 /* fade edge between scroll and panel */
@@ -607,8 +686,12 @@ h1 {
   display: block;
   height: 28px;
   margin: 0 -20px;
-  background: linear-gradient(to bottom, transparent, var(--bg));
+  background: linear-gradient(to bottom, transparent, transparent);
   pointer-events: none;
+  transition: background 0.3s ease;
+}
+.kb-panel.active::before {
+  background: linear-gradient(to bottom, transparent, var(--bg));
 }
 
 /* keyboard switch animation */
@@ -634,24 +717,22 @@ body.light .hw-panel { background: rgba(0,0,0,0.08); }
 .hw-panel-sub  { font-size: 14px; color: var(--t2); }
 .hw-panel-icon { font-size: 26px; opacity: 0.35; }
 
-.fab-wrap { display: flex; justify-content: center; margin-bottom: 10px; }
+.fab-wrap { display: flex; justify-content: center; margin-bottom: 4px; }
+.fab-wrap[hidden] { display: none; }
 
-/* ── Circular FAB for hiding/showing keyboard ── */
+/* ── Pill toggle for hiding/showing keyboard ── */
 .kb-fab {
-  width: 44px; height: 44px;
-  border-radius: 50%;
+  width: 32px; height: 18px;
+  border-radius: 9px;
   background: var(--s2);
   border: none;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  color: var(--t2);
+  color: var(--t3);
   transition: background 0.15s, transform 0.15s;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.35);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 .kb-fab:active { transform: scale(0.9); background: var(--s3); }
-.kb-fab svg { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
+.kb-fab svg { width: 12px; height: 12px; transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
 
 .kb-live-wrap {
   background: rgba(0,0,0,0.45);
@@ -674,6 +755,46 @@ body.light .hw-panel { background: rgba(0,0,0,0.08); }
   overflow: hidden;
   transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
   max-height: 240px;
+}
+
+/* ── CTA loading spinner ── */
+.cta-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 28px;
+  margin-top: 10px;
+  position: relative;
+  width: 28px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.cta-spinner[hidden] { display: none; }
+.cta-spinner::after {
+  content: '';
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid transparent;
+  border-top-color: var(--t3);
+  border-right-color: var(--t3);
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: spin 1.4s linear infinite;
+  position: absolute;
+  inset: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.cta-countdown {
+  font-size: 11px;
+  color: var(--t3);
+  opacity: 0.45;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* ── Screen 1 CTA: hidden until 5s or scroll-to-bottom ── */
@@ -759,8 +880,8 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
   transition: background-color 0.2s;
 }
 
-/* ── Screen 4: celebration ── */
-#slide-4 {
+/* ── Screen 6: celebration ── */
+#slide-6 {
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -975,14 +1096,136 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
 </button>
 
 <!-- ══════════════════════════════════════
-     SCREEN 1 — Choose typing style
+     SCREEN 1 — Enable keyboard
      ══════════════════════════════════════ -->
 <div class="slide active" id="slide-1">
+
+  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:40px 24px; text-align:center;">
+
+    <div class="step-dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+
+    <div style="margin:auto;">
+      <div style="width:72px; height:72px; border-radius:20px; background:var(--s1); display:flex; align-items:center; justify-content:center; margin:0 auto 24px;">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8"/>
+        </svg>
+      </div>
+
+      <h1>Enable your<br>keyboard</h1>
+      <div class="subtitle" style="margin-top:8px;">We'll open your keyboard settings.<br>Just toggle on Manglish Keyboard.</div>
+
+      <!-- Mock Android toggle -->
+      <div style="margin-top:32px; background:var(--s1); border-radius:14px; padding:0; text-align:left; overflow:hidden;">
+        <div style="display:flex; align-items:center; justify-content:between; padding:16px; gap:12px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:var(--accent-dim); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M8 16h8"/>
+            </svg>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:600; color:var(--t1);">Manglish Keyboard</div>
+            <div style="font-size:12px; color:var(--t3); margin-top:2px;">Malayalam, English</div>
+          </div>
+          <div style="width:44px; height:26px; border-radius:13px; background:var(--accent); position:relative; flex-shrink:0;">
+            <div style="width:22px; height:22px; border-radius:50%; background:#fff; position:absolute; top:2px; right:2px; box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
+          </div>
+        </div>
+        <div style="border-top:1px solid rgba(255,255,255,0.06); padding:12px 16px; display:flex; align-items:center; gap:8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <div style="font-size:12px; color:var(--t3);">This will open your device settings</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="cta" style="width:100%; margin-top:auto;" onclick="openKeyboardSettings()">Open keyboard settings</button>
+    <div style="margin-top:12px; text-align:center;">
+      <button style="background:none; border:none; color:var(--t3); font-size:13px; cursor:pointer; padding:8px;" onclick="goToScreen(2)">I've already enabled it →</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2 — Choose keyboard
+     ══════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+
+  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:40px 24px; text-align:center;">
+
+    <div class="step-dots">
+      <div class="dot"></div>
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+
+    <div style="margin:auto;">
+      <div style="width:72px; height:72px; border-radius:20px; background:var(--s1); display:flex; align-items:center; justify-content:center; margin:0 auto 24px;">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+      </div>
+
+      <h1>Set as default<br>keyboard</h1>
+      <div class="subtitle" style="margin-top:8px;">We'll open keyboard settings where you<br>can select Manglish Keyboard as default.</div>
+
+      <!-- Mock Android keyboard picker -->
+      <div style="margin-top:32px; background:var(--s1); border-radius:14px; padding:0; text-align:left; overflow:hidden;">
+        <div style="padding:12px 16px 8px; font-size:11px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; color:var(--t3);">Current keyboard</div>
+        <div style="display:flex; align-items:center; padding:10px 16px; gap:12px; background:rgba(69,163,117,0.08);">
+          <div style="width:36px; height:36px; border-radius:10px; background:var(--accent-dim); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M8 16h8"/>
+            </svg>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:14px; font-weight:600; color:var(--accent);">Manglish Keyboard</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div style="display:flex; align-items:center; padding:10px 16px 14px; gap:12px; opacity:0.4;">
+          <div style="width:36px; height:36px; border-radius:10px; background:var(--s2); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M8 16h8"/>
+            </svg>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:14px; color:var(--t3);">Gboard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="cta" style="width:100%; margin-top:auto;" onclick="openDefaultKeyboardSettings()">Set as default</button>
+    <div style="margin-top:12px; text-align:center;">
+      <button style="background:none; border:none; color:var(--t3); font-size:13px; cursor:pointer; padding:8px;" onclick="goToScreen(3)">I've already set it →</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3 — Choose typing style
+     ══════════════════════════════════════ -->
+<div class="slide" id="slide-3">
 
   <!-- Scrollable cards -->
   <div class="s1-scroll">
 
     <div class="step-dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
       <div class="dot active"></div>
       <div class="dot"></div>
       <div class="dot"></div>
@@ -994,10 +1237,10 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
       <div class="subtitle">You can change this anytime</div>
     </div>
 
-    <div class="label">Recommended</div>
+    <div class="label card-reveal" style="animation-delay:.2s">Recommended</div>
 
     <!-- Manglish (no keyboard inside — shown in bottom panel) -->
-    <div class="feat-card selected" id="card-manglish" onclick="pickLayout('manglish')">
+    <div class="feat-card card-reveal" style="animation-delay:.45s" id="card-manglish" onclick="pickLayout('manglish')">
       <div class="card-row">
         <div class="card-text">
           <div class="card-name">Manglish</div>
@@ -1014,34 +1257,79 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
       </div>
     </div>
 
+    <div id="other-section" style="opacity:0; margin-top:20px;">
+    <div class="label card-reveal" style="animation-delay:2.45s;">Other layouts</div>
+
     <div class="grid">
 
-      <div class="opt-card" id="card-handwriting" onclick="pickLayout('handwriting')">
-        <div class="hw">
-          <div class="hw-char">മ</div>
-          <div class="hw-icon">✏️</div>
+      <div class="card-wrap">
+        <div class="card-shimmer sm" id="shimmer-english"></div>
+        <div class="opt-card card-reveal" style="animation-delay:2.7s" id="card-english" onclick="pickLayout('english')">
+          <div class="kb-sm kb-sm-dark">
+            <div class="row-sm"><div class="k-sm">q</div><div class="k-sm">w</div><div class="k-sm">e</div><div class="k-sm">r</div><div class="k-sm">t</div></div>
+            <div class="row-sm"><div class="k-sm">a</div><div class="k-sm">s</div><div class="k-sm">d</div><div class="k-sm">f</div><div class="k-sm">g</div></div>
+            <div class="row-sm"><div class="k-sm fn">⇧</div><div class="k-sm">z</div><div class="k-sm">x</div><div class="k-sm">c</div><div class="k-sm fn">⌫</div></div>
+          </div>
+          <div class="opt-row">
+            <div class="opt-name">English</div>
+            <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="opt-sub">No transliteration</div>
         </div>
-        <div class="opt-row">
-          <div class="opt-name">Handwriting</div>
-          <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        </div>
-        <div class="opt-sub">Draw characters</div>
       </div>
 
-      <div class="opt-card" id="card-native" onclick="pickLayout('native')">
-        <div class="kb-sm kb-sm-dark">
-          <div class="row-sm"><div class="k-sm">അ</div><div class="k-sm">ആ</div><div class="k-sm">ഇ</div><div class="k-sm">ഈ</div><div class="k-sm">ഉ</div></div>
-          <div class="row-sm"><div class="k-sm">ക</div><div class="k-sm">ഖ</div><div class="k-sm">ഗ</div><div class="k-sm">ഘ</div><div class="k-sm">ച</div></div>
-          <div class="row-sm"><div class="k-sm fn">⇧</div><div class="k-sm">ന</div><div class="k-sm">മ</div><div class="k-sm">ര</div><div class="k-sm fn">⌫</div></div>
+      <div class="card-wrap">
+        <div class="card-shimmer sm" id="shimmer-handwriting"></div>
+        <div class="opt-card card-reveal" style="animation-delay:2.9s" id="card-handwriting" onclick="pickLayout('handwriting')">
+          <div class="hw">
+            <div class="hw-char">മ</div>
+            <div class="hw-icon">✏️</div>
+          </div>
+          <div class="opt-row">
+            <div class="opt-name">Handwriting</div>
+            <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="opt-sub">Draw characters</div>
         </div>
-        <div class="opt-row">
-          <div class="opt-name">Malayalam</div>
-          <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+
+      <div class="card-wrap">
+        <div class="card-shimmer sm" id="shimmer-native"></div>
+        <div class="opt-card card-reveal" style="animation-delay:3.1s" id="card-native" onclick="pickLayout('native')">
+          <div class="kb-sm kb-sm-dark">
+            <div class="row-sm"><div class="k-sm">അ</div><div class="k-sm">ആ</div><div class="k-sm">ഇ</div><div class="k-sm">ഈ</div><div class="k-sm">ഉ</div></div>
+            <div class="row-sm"><div class="k-sm">ക</div><div class="k-sm">ഖ</div><div class="k-sm">ഗ</div><div class="k-sm">ഘ</div><div class="k-sm">ച</div></div>
+            <div class="row-sm"><div class="k-sm fn">⇧</div><div class="k-sm">ന</div><div class="k-sm">മ</div><div class="k-sm">ര</div><div class="k-sm fn">⌫</div></div>
+          </div>
+          <div class="opt-row">
+            <div class="opt-name">Malayalam</div>
+            <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="opt-sub">Native script keys</div>
         </div>
-        <div class="opt-sub">Native script keys</div>
+      </div>
+
+      <div class="card-wrap">
+        <div class="card-shimmer sm" id="shimmer-voice"></div>
+        <div class="opt-card card-reveal" style="animation-delay:3.3s" id="card-voice" onclick="pickLayout('voice')">
+          <div class="voice-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--t2)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="1" width="6" height="11" rx="3"/>
+              <path d="M19 10v1a7 7 0 0 1-14 0v-1"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </div>
+          <div class="opt-row">
+            <div class="opt-name">Voice</div>
+            <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="opt-sub">Speak to type</div>
+        </div>
       </div>
 
     </div>
+    </div><!-- end #other-section -->
 
   </div><!-- end .s1-scroll -->
 
@@ -1152,9 +1440,66 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
         </div>
       </div>
 
+      <!-- English -->
+      <div id="kbp-english" style="display:none;">
+        <div class="kb kb-dark">
+          <div class="row">
+            <div class="k"><span class="k-main">q</span></div>
+            <div class="k"><span class="k-main">w</span></div>
+            <div class="k"><span class="k-main">e</span></div>
+            <div class="k"><span class="k-main">r</span></div>
+            <div class="k"><span class="k-main">t</span></div>
+            <div class="k"><span class="k-main">y</span></div>
+            <div class="k"><span class="k-main">u</span></div>
+            <div class="k"><span class="k-main">i</span></div>
+            <div class="k"><span class="k-main">o</span></div>
+            <div class="k"><span class="k-main">p</span></div>
+          </div>
+          <div class="row">
+            <div class="k"><span class="k-main">a</span></div>
+            <div class="k"><span class="k-main">s</span></div>
+            <div class="k"><span class="k-main">d</span></div>
+            <div class="k"><span class="k-main">f</span></div>
+            <div class="k"><span class="k-main">g</span></div>
+            <div class="k"><span class="k-main">h</span></div>
+            <div class="k"><span class="k-main">j</span></div>
+            <div class="k"><span class="k-main">k</span></div>
+            <div class="k"><span class="k-main">l</span></div>
+          </div>
+          <div class="row">
+            <div class="k fn">⇧</div>
+            <div class="k"><span class="k-main">z</span></div>
+            <div class="k"><span class="k-main">x</span></div>
+            <div class="k"><span class="k-main">c</span></div>
+            <div class="k"><span class="k-main">v</span></div>
+            <div class="k"><span class="k-main">b</span></div>
+            <div class="k"><span class="k-main">n</span></div>
+            <div class="k"><span class="k-main">m</span></div>
+            <div class="k fn">⌫</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Voice -->
+      <div id="kbp-voice" style="display:none;">
+        <div class="hw-panel">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--t2)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="1" width="6" height="11" rx="3"/>
+            <path d="M19 10v1a7 7 0 0 1-14 0v-1"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+          <div class="hw-panel-text">
+            <div class="hw-panel-name">Voice typing</div>
+            <div class="hw-panel-sub">Speak and see it typed</div>
+          </div>
+        </div>
+      </div>
+
     </div><!-- end #s1-kb-wrap (starts hidden, revealed on first card tap) -->
 
-    <button class="cta" id="cta-s1" style="margin-top:10px;" onclick="goToScreen(2)">Continue</button>
+    <div class="cta-spinner" id="spinner-s1" hidden><span class="cta-countdown" id="countdown-s1"></span></div>
+    <button class="cta" id="cta-s1" style="margin-top:10px;" onclick="goToScreen(4)">Continue</button>
 
   </div><!-- end .kb-panel -->
 
@@ -1162,11 +1507,13 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
 
 
 <!-- ══════════════════════════════════════
-     SCREEN 2 — Choose keyboard theme
+     SCREEN 4 — Choose keyboard theme
      ══════════════════════════════════════ -->
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-4">
 
   <div class="step-dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot active"></div>
     <div class="dot"></div>
@@ -1181,7 +1528,7 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
   <div class="label">Recommended</div>
 
   <!-- Dark (featured) -->
-  <div class="feat-card selected" id="theme-dark" onclick="pickTheme('dark')">
+  <div class="feat-card" id="theme-dark" onclick="pickTheme('dark')">
 
     <div class="kb kb-dark">
       <div class="row">
@@ -1304,21 +1651,24 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
       </svg>
       More themes in Settings
     </div>
-    <button class="cta" id="cta-s2" onclick="goToScreen(3)">Continue</button>
+    <div class="cta-spinner" id="spinner-s2" hidden><span class="cta-countdown" id="countdown-s2"></span></div>
+    <button class="cta" id="cta-s2" onclick="goToScreen(5)">Continue</button>
   </div>
 
 </div>
 
 
 <!-- ══════════════════════════════════════
-     SCREEN 3 — Keyboard settings
+     SCREEN 5 — Keyboard settings
      ══════════════════════════════════════ -->
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-5">
 
   <!-- Scrollable content -->
   <div class="s3-scroll">
 
     <div class="step-dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
       <div class="dot"></div>
       <div class="dot"></div>
       <div class="dot active"></div>
@@ -1403,7 +1753,7 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
   </div><!-- end .s3-scroll -->
 
   <!-- Fixed bottom panel: toggle btn + keyboard + CTA -->
-  <div class="kb-panel">
+  <div class="kb-panel active">
 
     <div class="fab-wrap" id="fab-s3-wrap" hidden>
       <button class="kb-fab" id="kb-fab-s3" onclick="toggleKbPreview()" aria-label="Hide keyboard">
@@ -1453,7 +1803,7 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
 
     </div><!-- end .kb-live-wrap -->
 
-    <button class="cta" style="margin-top:10px;" onclick="goToScreen(4)">Start typing</button>
+    <button class="cta" style="margin-top:10px;" onclick="goToScreen(6)">Start typing</button>
 
   </div><!-- end .kb-panel -->
 
@@ -1461,9 +1811,9 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
 
 
 <!-- ══════════════════════════════════════
-     SCREEN 4 — Celebration / You're all set
+     SCREEN 6 — Celebration / You're all set
      ══════════════════════════════════════ -->
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-6">
 
   <!-- Confetti canvas -->
   <canvas id="confetti-canvas"></canvas>
@@ -1507,7 +1857,24 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
 <script>
 let currentScreen = 1;
 
+function openKeyboardSettings() {
+  // Android: open input method settings to enable keyboards
+  try {
+    window.location.href = 'intent://settings#Intent;action=android.settings.INPUT_METHOD_SETTINGS;end';
+  } catch(e) {}
+  setTimeout(() => goToScreen(2), 500);
+}
+
+function openDefaultKeyboardSettings() {
+  // Android: open input method picker to set default keyboard
+  try {
+    window.location.href = 'intent://settings#Intent;action=android.settings.INPUT_METHOD_SUBTYPE_SETTINGS;end';
+  } catch(e) {}
+  setTimeout(() => goToScreen(3), 500);
+}
+
 function goToScreen(n) {
+
   const next = document.getElementById('slide-' + n);
   document.querySelectorAll('.slide').forEach(s => s.classList.remove('active', 'slide-in'));
   next.classList.add('active', 'slide-in');
@@ -1515,20 +1882,18 @@ function goToScreen(n) {
   window.scrollTo(0, 0);
   currentScreen = n;
 
-  // Show back button on screens 2 & 3 only
+  // Show back button on screens 2–5, hide on 1 and 6
   const backBtn = document.getElementById('back-btn');
-  backBtn.style.display = (n === 2 || n === 3) ? 'flex' : 'none';
+  backBtn.style.display = (n >= 2 && n <= 5) ? 'flex' : 'none';
 
-  // Screen 2: start 5s timer for Continue button
-  if (n === 2) {
-    clearTimeout(ctaS2Timer);
-    if (!ctaS2Revealed) {
-      ctaS2Timer = setTimeout(revealCtaS2, 5000);
-    }
+  // Audio instructions per screen
+  const audioFiles = { 3: 'audio-screen1.mp3', 4: 'audio-screen2.mp3', 5: 'audio-screen3.mp3', 6: 'audio-screen4.mp3' };
+  if (audioFiles[n]) {
+    setTimeout(() => { const a = new Audio(audioFiles[n]); a.volume = 0.8; a.play().catch(() => {}); }, 500);
   }
 
-  // Re-trigger checkmark + celebration animations on slide-4
-  if (n === 4) {
+  // Re-trigger checkmark + celebration animations on slide-6
+  if (n === 6) {
     // Reset checkmark SVG animations
     const ring = next.querySelector('.check-ring');
     const mark = next.querySelector('.check-mark');
@@ -1559,8 +1924,9 @@ let currentLayout = 'manglish';
 let kbS1EverShown = false;
 
 function pickLayout(id) {
+
   // Update card selection
-  document.querySelectorAll('#slide-1 .feat-card, #slide-1 .opt-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('#slide-3 .feat-card, #slide-3 .opt-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('card-' + id).classList.add('selected');
 
   // Switch keyboard content if changing layout
@@ -1587,24 +1953,26 @@ function pickLayout(id) {
 
 let currentTheme = 'dark';
 function pickTheme(id) {
+
   if (id === 'custom') {
     document.getElementById('custom-theme-input').click();
     return;
   }
   if (currentTheme === id) { revealCtaS2(); return; }
-  document.querySelectorAll('#slide-2 .feat-card, #slide-2 .opt-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('#slide-4 .feat-card, #slide-4 .opt-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('theme-' + id).classList.add('selected');
   currentTheme = id;
   revealCtaS2();
 }
 
 let ctaS2Revealed = false;
-let ctaS2Timer = null;
 function revealCtaS2() {
   if (ctaS2Revealed) return;
   ctaS2Revealed = true;
-  clearTimeout(ctaS2Timer);
+  document.getElementById('spinner-s2').hidden = true;
   document.getElementById('cta-s2').classList.add('revealed');
+  document.querySelector('#slide-4 .footer').classList.add('active');
+
 }
 
 function handleCustomPhoto(event) {
@@ -1626,25 +1994,22 @@ function handleCustomPhoto(event) {
   }
 
   // Select the custom card
-  document.querySelectorAll('#slide-2 .feat-card, #slide-2 .opt-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('#slide-4 .feat-card, #slide-4 .opt-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('theme-custom').classList.add('selected');
   currentTheme = 'custom';
   revealCtaS2();
 }
 
-// ── Screen 1 CTA: reveal after 5s or on scroll to bottom ──
+// ── Screen 1 CTA: reveal only when user picks a layout ──
 let ctaRevealed = false;
 function revealCta() {
   if (ctaRevealed) return;
   ctaRevealed = true;
+  document.getElementById('spinner-s1').hidden = true;
   document.getElementById('cta-s1').classList.add('revealed');
+  document.querySelector('#slide-3 .kb-panel').classList.add('active');
+
 }
-setTimeout(revealCta, 5000);
-window.addEventListener('scroll', function() {
-  if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 60) {
-    revealCta();
-  }
-}, { passive: true });
 
 function toggleMode() {
   const light = document.body.classList.toggle('light');
@@ -1808,7 +2173,6 @@ function startMalTyping() {
   function runExample(ex) {
     // Reset
     srcEl.innerHTML = '<span class="t-cursor"></span>';
-    dstEl.textContent = '';
     dstEl.classList.remove('show');
     arrEl.classList.remove('active');
 
@@ -1857,6 +2221,28 @@ function startMalTyping() {
   // Start after a short delay so the page renders first
   setTimeout(() => runExample(examples[0]), 600);
 })();
+
+// Screen 1 audio instruction
+
+// Show other section + shimmers after Manglish card reveals
+document.getElementById('card-manglish').addEventListener('animationend', () => {
+  const section = document.getElementById('other-section');
+  section.style.transition = 'opacity 0.4s ease';
+  section.style.opacity = '1';
+  document.querySelectorAll('.card-shimmer').forEach(s => s.classList.add('show'));
+  // Nudge sound when other section starts appearing
+});
+
+// Fade out shimmer when its card reveal animation ends
+document.querySelectorAll('.card-reveal').forEach(card => {
+  card.addEventListener('animationend', () => {
+    const wrap = card.closest('.card-wrap');
+    if (wrap) {
+      const shimmer = wrap.querySelector('.card-shimmer');
+      if (shimmer) shimmer.classList.add('fade');
+    }
+  });
+});
 
 function toggleSetting(el, key) {
   el.classList.toggle('on');
