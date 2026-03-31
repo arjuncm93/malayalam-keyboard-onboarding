@@ -405,6 +405,109 @@ h1 {
 
 .cta:hover  { filter: brightness(1.1); }
 .cta:active { transform: scale(0.985); filter: brightness(0.95); }
+
+/* ── Settings grid (screen 3) ── */
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.sg-card {
+  background: var(--s1);
+  border-radius: 14px;
+  padding: 13px 12px;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.1s;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sg-card:active { transform: scale(0.97); }
+.sg-card.on { background: var(--s2); }
+
+.sg-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sg-icon {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: var(--s2);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.18s;
+}
+.sg-icon svg { stroke: var(--t3); transition: stroke 0.18s; }
+.sg-card.on .sg-icon { background: var(--accent-dim); }
+.sg-card.on .sg-icon svg { stroke: var(--accent); }
+.sg-icon .icon-emoji { font-size: 14px; opacity: 0.38; transition: opacity 0.18s; }
+.sg-card.on .sg-icon .icon-emoji { opacity: 1; }
+
+.mini-toggle {
+  width: 32px; height: 19px;
+  border-radius: 10px;
+  background: var(--s3);
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.22s;
+}
+.mini-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2.5px; left: 2.5px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transition: transform 0.22s cubic-bezier(0.4,0,0.2,1), background 0.2s;
+}
+.sg-card.on .mini-toggle { background: var(--accent); }
+.sg-card.on .mini-toggle::after { transform: translateX(13px); background: #fff; }
+
+.sg-name { font-size: 13px; font-weight: 600; color: var(--t1); line-height: 1; }
+
+/* ── Live keyboard preview ── */
+.kb-live-wrap {
+  margin-top: 20px;
+  background: rgba(0,0,0,0.45);
+  border-radius: 14px;
+  padding: 10px 8px 12px;
+  overflow: hidden;
+}
+
+.kb-live-row {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+.kb-live-row:last-child { margin-bottom: 0; }
+
+.kl {
+  flex: 1;
+  max-width: 31px;
+  height: 34px;
+  background: var(--s3);
+  color: var(--t1);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+}
+.kl.fn { max-width: none; flex: 1.6; background: var(--s2); color: var(--t2); font-size: 11px; }
+.kl.num { background: var(--s2); color: var(--t2); font-size: 11px; }
+.kl.emoji-k { background: transparent; font-size: 16px; }
+
+/* Collapsible rows */
+.kb-collapsible {
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.25s;
+}
+.kb-collapsible.visible { max-height: 44px; opacity: 1; }
+.kb-collapsible.hidden  { max-height: 0;    opacity: 0; }
 </style>
 </head>
 <body>
@@ -702,91 +805,138 @@ h1 {
 
   <div class="header">
     <h1>Set up your<br>keyboard</h1>
-    <div class="subtitle">Toggle features on or off</div>
+    <div class="subtitle">Tap to see changes live below</div>
   </div>
 
-  <div class="settings-list">
+  <!-- 2-col settings grid -->
+  <div class="settings-grid">
 
-    <div class="setting-row on" onclick="toggleSetting(this)">
-      <div class="setting-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="8" width="4" height="8" rx="1.5"/>
-          <rect x="10" y="8" width="4" height="8" rx="1.5"/>
-          <rect x="18" y="8" width="4" height="8" rx="1.5"/>
-        </svg>
+    <div class="sg-card on" id="tog-numrow" onclick="toggleSetting(this, 'numrow')">
+      <div class="sg-top">
+        <div class="sg-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="8" width="4" height="8" rx="1.5"/>
+            <rect x="10" y="8" width="4" height="8" rx="1.5"/>
+            <rect x="18" y="8" width="4" height="8" rx="1.5"/>
+          </svg>
+        </div>
+        <div class="mini-toggle"></div>
       </div>
-      <div class="setting-text">
-        <div class="setting-name">Number row</div>
-        <div class="setting-desc">Show 1–0 above the letters</div>
-      </div>
-      <div class="toggle"></div>
+      <div class="sg-name">Number row</div>
     </div>
 
-    <div class="setting-row on" onclick="toggleSetting(this)">
-      <div class="setting-icon">
-        <span class="icon-emoji" style="font-size:18px;">😊</span>
+    <div class="sg-card on" id="tog-emojirow" onclick="toggleSetting(this, 'emojirow')">
+      <div class="sg-top">
+        <div class="sg-icon"><span class="icon-emoji">😊</span></div>
+        <div class="mini-toggle"></div>
       </div>
-      <div class="setting-text">
-        <div class="setting-name">Emoji row</div>
-        <div class="setting-desc">Quick access to frequent emojis</div>
-      </div>
-      <div class="toggle"></div>
+      <div class="sg-name">Emoji row</div>
     </div>
 
-    <div class="setting-row on" onclick="toggleSetting(this)">
-      <div class="setting-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
+    <div class="sg-card on" id="tog-autocorrect" onclick="toggleSetting(this, null)">
+      <div class="sg-top">
+        <div class="sg-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <div class="mini-toggle"></div>
       </div>
-      <div class="setting-text">
-        <div class="setting-name">Auto-correct</div>
-        <div class="setting-desc">Fix typos as you type</div>
-      </div>
-      <div class="toggle"></div>
+      <div class="sg-name">Auto-correct</div>
     </div>
 
-    <div class="setting-row on" onclick="toggleSetting(this)">
-      <div class="setting-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12h14M12 5l7 7-7 7"/>
-        </svg>
+    <div class="sg-card on" id="tog-swipe" onclick="toggleSetting(this, null)">
+      <div class="sg-top">
+        <div class="sg-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+        <div class="mini-toggle"></div>
       </div>
-      <div class="setting-text">
-        <div class="setting-name">Swipe to type</div>
-        <div class="setting-desc">Slide across keys to form words</div>
-      </div>
-      <div class="toggle"></div>
+      <div class="sg-name">Swipe to type</div>
     </div>
 
-    <div class="setting-row" onclick="toggleSetting(this)">
-      <div class="setting-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8.5 14.5A2.5 2.5 0 0011 12V6a2.5 2.5 0 00-5 0v6a2.5 2.5 0 002.5 2.5z"/>
-          <path d="M11 12a4 4 0 008 0v-2"/>
-          <line x1="8.5" y1="14.5" x2="8.5" y2="21"/>
-          <line x1="6" y1="21" x2="11" y2="21"/>
-        </svg>
+    <div class="sg-card" id="tog-haptic" onclick="toggleSetting(this, null)">
+      <div class="sg-top">
+        <div class="sg-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8.5 14.5A2.5 2.5 0 0011 12V6a2.5 2.5 0 00-5 0v6a2.5 2.5 0 002.5 2.5z"/>
+            <path d="M11 12a4 4 0 008 0v-2"/>
+            <line x1="8.5" y1="14.5" x2="8.5" y2="21"/>
+            <line x1="6" y1="21" x2="11" y2="21"/>
+          </svg>
+        </div>
+        <div class="mini-toggle"></div>
       </div>
-      <div class="setting-text">
-        <div class="setting-name">Haptic feedback</div>
-        <div class="setting-desc">Vibrate on each keypress</div>
-      </div>
-      <div class="toggle"></div>
+      <div class="sg-name">Haptic feedback</div>
     </div>
 
-    <div class="setting-row" onclick="toggleSetting(this)">
-      <div class="setting-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-          <path d="M15.54 8.46a5 5 0 010 7.07"/>
-        </svg>
+    <div class="sg-card" id="tog-sounds" onclick="toggleSetting(this, null)">
+      <div class="sg-top">
+        <div class="sg-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M15.54 8.46a5 5 0 010 7.07"/>
+          </svg>
+        </div>
+        <div class="mini-toggle"></div>
       </div>
-      <div class="setting-text">
-        <div class="setting-name">Key sounds</div>
-        <div class="setting-desc">Play a click on each keypress</div>
+      <div class="sg-name">Key sounds</div>
+    </div>
+
+  </div>
+
+  <!-- Live keyboard preview -->
+  <div class="kb-live-wrap">
+
+    <!-- Emoji row (collapsible) -->
+    <div class="kb-collapsible visible" id="kb-emoji-row">
+      <div class="kb-live-row" style="margin-bottom:8px;">
+        <div class="kl emoji-k">😊</div>
+        <div class="kl emoji-k">😂</div>
+        <div class="kl emoji-k">❤️</div>
+        <div class="kl emoji-k">👍</div>
+        <div class="kl emoji-k">🙏</div>
+        <div class="kl emoji-k">😍</div>
+        <div class="kl emoji-k" style="font-size:11px;color:var(--t3);">•••</div>
       </div>
-      <div class="toggle"></div>
+    </div>
+
+    <!-- Number row (collapsible) -->
+    <div class="kb-collapsible visible" id="kb-num-row">
+      <div class="kb-live-row">
+        <div class="kl num">1</div>
+        <div class="kl num">2</div>
+        <div class="kl num">3</div>
+        <div class="kl num">4</div>
+        <div class="kl num">5</div>
+        <div class="kl num">6</div>
+        <div class="kl num">7</div>
+        <div class="kl num">8</div>
+        <div class="kl num">9</div>
+        <div class="kl num">0</div>
+      </div>
+    </div>
+
+    <!-- QWERTY rows (always visible) -->
+    <div class="kb-live-row" style="margin-top:5px;">
+      <div class="kl">q</div><div class="kl">w</div><div class="kl">e</div>
+      <div class="kl">r</div><div class="kl">t</div><div class="kl">y</div>
+      <div class="kl">u</div><div class="kl">i</div><div class="kl">o</div>
+      <div class="kl">p</div>
+    </div>
+    <div class="kb-live-row">
+      <div class="kl">a</div><div class="kl">s</div><div class="kl">d</div>
+      <div class="kl">f</div><div class="kl">g</div><div class="kl">h</div>
+      <div class="kl">j</div><div class="kl">k</div><div class="kl">l</div>
+    </div>
+    <div class="kb-live-row">
+      <div class="kl fn">⇧</div>
+      <div class="kl">z</div><div class="kl">x</div><div class="kl">c</div>
+      <div class="kl">v</div><div class="kl">b</div><div class="kl">n</div>
+      <div class="kl">m</div>
+      <div class="kl fn">⌫</div>
     </div>
 
   </div>
@@ -794,12 +944,6 @@ h1 {
   <div class="spacer"></div>
 
   <div class="footer">
-    <div class="hint">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
-      </svg>
-      All settings in Settings → Keyboard
-    </div>
     <button class="cta">Start typing</button>
   </div>
 
@@ -831,8 +975,18 @@ function pickTheme(id) {
   currentTheme = id;
 }
 
-function toggleSetting(el) {
+function toggleSetting(el, key) {
   el.classList.toggle('on');
+  if (key === 'numrow') {
+    const row = document.getElementById('kb-num-row');
+    row.classList.toggle('visible', el.classList.contains('on'));
+    row.classList.toggle('hidden',  !el.classList.contains('on'));
+  }
+  if (key === 'emojirow') {
+    const row = document.getElementById('kb-emoji-row');
+    row.classList.toggle('visible', el.classList.contains('on'));
+    row.classList.toggle('hidden',  !el.classList.contains('on'));
+  }
 }
 </script>
 
