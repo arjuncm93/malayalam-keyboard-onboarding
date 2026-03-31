@@ -509,21 +509,21 @@ h1 {
 .kb-collapsible.visible { max-height: 44px; opacity: 1; }
 .kb-collapsible.hidden  { max-height: 0;    opacity: 0; }
 
-/* ── Screen 3 fixed-bottom layout ── */
-#slide-3 {
+/* ── Screens with pinned keyboard panel ── */
+#slide-1, #slide-3 {
   padding: 0;
   height: 100vh;
   overflow: hidden;
 }
 
-.s3-scroll {
+.s1-scroll, .s3-scroll {
   flex: 1;
   overflow-y: auto;
   padding: 60px 20px 24px;
   -webkit-overflow-scrolling: touch;
 }
 
-.s3-kb-panel {
+.kb-panel {
   position: fixed;
   bottom: 0;
   left: 50%;
@@ -535,8 +535,8 @@ h1 {
   background: var(--bg);
 }
 
-/* gradient fade between scroll content and panel */
-.s3-kb-panel::before {
+/* fade edge between scroll and panel */
+.kb-panel::before {
   content: '';
   display: block;
   height: 28px;
@@ -545,25 +545,45 @@ h1 {
   pointer-events: none;
 }
 
-.kb-toggle-btn {
+/* keyboard switch animation */
+@keyframes kbSwitch {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.kbp-animate { animation: kbSwitch 0.26s cubic-bezier(0.4,0,0.2,1) both; }
+
+/* handwriting preview in panel */
+.hw-panel {
+  background: rgba(0,0,0,0.45);
+  border-radius: 14px;
+  padding: 22px 20px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  width: 100%;
-  padding: 9px;
-  background: var(--s1);
-  border: none;
-  border-radius: 10px;
-  color: var(--t3);
-  font-size: 12px;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  margin-bottom: 8px;
-  transition: background 0.15s;
+  gap: 18px;
 }
-.kb-toggle-btn:active { background: var(--s2); }
+body.light .hw-panel { background: rgba(0,0,0,0.08); }
+.hw-panel-char { font-size: 64px; color: var(--t1); line-height: 1; }
+.hw-panel-text { flex: 1; }
+.hw-panel-name { font-size: 16px; font-weight: 600; color: var(--t1); margin-bottom: 3px; }
+.hw-panel-sub  { font-size: 14px; color: var(--t2); }
+.hw-panel-icon { font-size: 26px; opacity: 0.35; }
+
+/* ── Circular FAB for hiding/showing keyboard ── */
+.kb-fab {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--s2);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--t2);
+  transition: background 0.15s, transform 0.15s;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.kb-fab:active { transform: scale(0.9); background: var(--s3); }
+.kb-fab svg { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
 
 .kb-live-wrap {
   background: rgba(0,0,0,0.45);
@@ -574,11 +594,18 @@ h1 {
   max-height: 240px;
 }
 
-.kb-live-wrap.kb-hidden {
+.kb-live-wrap.kb-hidden,
+#s1-kb-wrap.kb-hidden {
   max-height: 0;
   opacity: 0;
   padding-top: 0;
   padding-bottom: 0;
+}
+
+#s1-kb-wrap {
+  overflow: hidden;
+  transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+  max-height: 240px;
 }
 
 /* ── Screen 1 CTA: hidden until 5s or scroll-to-bottom ── */
@@ -653,133 +680,183 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
      ══════════════════════════════════════ -->
 <div class="slide active" id="slide-1">
 
-  <div class="step-dots">
-    <div class="dot active"></div>
-    <div class="dot"></div>
-    <div class="dot"></div>
-  </div>
+  <!-- Scrollable cards -->
+  <div class="s1-scroll">
 
-  <div class="header">
-    <h1>Choose your<br>typing style</h1>
-    <div class="subtitle">You can change this anytime</div>
-  </div>
-
-  <div class="label">Recommended</div>
-
-  <!-- Manglish -->
-  <div class="feat-card selected" id="card-manglish" onclick="pickLayout('manglish')">
-
-    <div class="kb kb-dark">
-      <div class="row">
-        <div class="k"><span class="k-main">q</span><span class="k-hint">ക്യ</span></div>
-        <div class="k"><span class="k-main">w</span><span class="k-hint">വ</span></div>
-        <div class="k"><span class="k-main">e</span><span class="k-hint">എ</span></div>
-        <div class="k"><span class="k-main">r</span><span class="k-hint">ര</span></div>
-        <div class="k"><span class="k-main">t</span><span class="k-hint">ത</span></div>
-        <div class="k"><span class="k-main">y</span><span class="k-hint">യ</span></div>
-        <div class="k"><span class="k-main">u</span><span class="k-hint">ഉ</span></div>
-        <div class="k"><span class="k-main">i</span><span class="k-hint">ഇ</span></div>
-        <div class="k"><span class="k-main">o</span><span class="k-hint">ഒ</span></div>
-        <div class="k"><span class="k-main">p</span><span class="k-hint">പ</span></div>
-      </div>
-      <div class="row">
-        <div class="k"><span class="k-main">a</span><span class="k-hint">അ</span></div>
-        <div class="k"><span class="k-main">s</span><span class="k-hint">സ</span></div>
-        <div class="k"><span class="k-main">d</span><span class="k-hint">ദ</span></div>
-        <div class="k"><span class="k-main">f</span><span class="k-hint">ഫ</span></div>
-        <div class="k"><span class="k-main">g</span><span class="k-hint">ഗ</span></div>
-        <div class="k"><span class="k-main">h</span><span class="k-hint">ഹ</span></div>
-        <div class="k"><span class="k-main">j</span><span class="k-hint">ജ</span></div>
-        <div class="k"><span class="k-main">k</span><span class="k-hint">ക</span></div>
-        <div class="k"><span class="k-main">l</span><span class="k-hint">ല</span></div>
-      </div>
-      <div class="row">
-        <div class="k fn">⇧</div>
-        <div class="k"><span class="k-main">z</span><span class="k-hint">സ</span></div>
-        <div class="k"><span class="k-main">x</span><span class="k-hint">ക്ഷ</span></div>
-        <div class="k"><span class="k-main">c</span><span class="k-hint">ച</span></div>
-        <div class="k"><span class="k-main">v</span><span class="k-hint">വ</span></div>
-        <div class="k"><span class="k-main">b</span><span class="k-hint">ബ</span></div>
-        <div class="k"><span class="k-main">n</span><span class="k-hint">ന</span></div>
-        <div class="k"><span class="k-main">m</span><span class="k-hint">മ</span></div>
-        <div class="k fn">⌫</div>
-      </div>
+    <div class="step-dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
     </div>
 
-    <div class="card-row">
-      <div class="card-text">
-        <div class="card-name">Manglish</div>
-        <div class="card-sub">Type English, get Malayalam</div>
-      </div>
-      <div class="chk">
-        <svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
+    <div class="header">
+      <h1>Choose your<br>typing style</h1>
+      <div class="subtitle">You can change this anytime</div>
     </div>
 
-    <div class="example">
-      <span class="ex-src">namaskaram</span>
-      <span class="ex-arrow">→</span>
-      <span class="ex-dst">നമസ്കാരം</span>
-    </div>
+    <div class="label">Recommended</div>
 
-  </div>
-
-  <div class="grid">
-
-    <div class="opt-card" id="card-handwriting" onclick="pickLayout('handwriting')">
-      <div class="hw">
-        <div class="hw-char">മ</div>
-        <div class="hw-icon">✏️</div>
-      </div>
-      <div class="opt-row">
-        <div class="opt-name">Handwriting</div>
+    <!-- Manglish (no keyboard inside — shown in bottom panel) -->
+    <div class="feat-card selected" id="card-manglish" onclick="pickLayout('manglish')">
+      <div class="card-row">
+        <div class="card-text">
+          <div class="card-name">Manglish</div>
+          <div class="card-sub">Type English, get Malayalam</div>
+        </div>
         <div class="chk">
           <svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>
-      <div class="opt-sub">Draw characters</div>
+      <div class="example">
+        <span class="ex-src">namaskaram</span>
+        <span class="ex-arrow">→</span>
+        <span class="ex-dst">നമസ്കാരം</span>
+      </div>
     </div>
 
-    <div class="opt-card" id="card-native" onclick="pickLayout('native')">
-      <div class="kb-sm kb-sm-dark">
-        <div class="row-sm">
-          <div class="k-sm">അ</div>
-          <div class="k-sm">ആ</div>
-          <div class="k-sm">ഇ</div>
-          <div class="k-sm">ഈ</div>
-          <div class="k-sm">ഉ</div>
+    <div class="grid">
+
+      <div class="opt-card" id="card-handwriting" onclick="pickLayout('handwriting')">
+        <div class="hw">
+          <div class="hw-char">മ</div>
+          <div class="hw-icon">✏️</div>
         </div>
-        <div class="row-sm">
-          <div class="k-sm">ക</div>
-          <div class="k-sm">ഖ</div>
-          <div class="k-sm">ഗ</div>
-          <div class="k-sm">ഘ</div>
-          <div class="k-sm">ച</div>
+        <div class="opt-row">
+          <div class="opt-name">Handwriting</div>
+          <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
-        <div class="row-sm">
-          <div class="k-sm fn">⇧</div>
-          <div class="k-sm">ന</div>
-          <div class="k-sm">മ</div>
-          <div class="k-sm">ര</div>
-          <div class="k-sm fn">⌫</div>
-        </div>
+        <div class="opt-sub">Draw characters</div>
       </div>
-      <div class="opt-row">
-        <div class="opt-name">Malayalam</div>
-        <div class="chk">
-          <svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+      <div class="opt-card" id="card-native" onclick="pickLayout('native')">
+        <div class="kb-sm kb-sm-dark">
+          <div class="row-sm"><div class="k-sm">അ</div><div class="k-sm">ആ</div><div class="k-sm">ഇ</div><div class="k-sm">ഈ</div><div class="k-sm">ഉ</div></div>
+          <div class="row-sm"><div class="k-sm">ക</div><div class="k-sm">ഖ</div><div class="k-sm">ഗ</div><div class="k-sm">ഘ</div><div class="k-sm">ച</div></div>
+          <div class="row-sm"><div class="k-sm fn">⇧</div><div class="k-sm">ന</div><div class="k-sm">മ</div><div class="k-sm">ര</div><div class="k-sm fn">⌫</div></div>
         </div>
+        <div class="opt-row">
+          <div class="opt-name">Malayalam</div>
+          <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="opt-sub">Native script keys</div>
       </div>
-      <div class="opt-sub">Native script keys</div>
+
     </div>
 
-  </div>
+  </div><!-- end .s1-scroll -->
 
-  <div class="spacer"></div>
+  <!-- Pinned bottom panel with live keyboard preview -->
+  <div class="kb-panel">
 
-  <div class="footer">
-    <button class="cta" id="cta-s1" onclick="goToScreen(2)">Continue</button>
-  </div>
+    <!-- Circular hide/show toggle -->
+    <div style="display:flex; justify-content:center; margin-bottom:10px;">
+      <button class="kb-fab" id="kb-fab-s1" onclick="toggleKbS1()" aria-label="Hide keyboard">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="fab-s1-icon">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Keyboard variants (only one visible at a time) -->
+    <div id="s1-kb-wrap">
+
+      <!-- Manglish -->
+      <div id="kbp-manglish">
+        <div class="kb kb-dark">
+          <div class="row">
+            <div class="k"><span class="k-main">q</span><span class="k-hint">ക്യ</span></div>
+            <div class="k"><span class="k-main">w</span><span class="k-hint">വ</span></div>
+            <div class="k"><span class="k-main">e</span><span class="k-hint">എ</span></div>
+            <div class="k"><span class="k-main">r</span><span class="k-hint">ര</span></div>
+            <div class="k"><span class="k-main">t</span><span class="k-hint">ത</span></div>
+            <div class="k"><span class="k-main">y</span><span class="k-hint">യ</span></div>
+            <div class="k"><span class="k-main">u</span><span class="k-hint">ഉ</span></div>
+            <div class="k"><span class="k-main">i</span><span class="k-hint">ഇ</span></div>
+            <div class="k"><span class="k-main">o</span><span class="k-hint">ഒ</span></div>
+            <div class="k"><span class="k-main">p</span><span class="k-hint">പ</span></div>
+          </div>
+          <div class="row">
+            <div class="k"><span class="k-main">a</span><span class="k-hint">അ</span></div>
+            <div class="k"><span class="k-main">s</span><span class="k-hint">സ</span></div>
+            <div class="k"><span class="k-main">d</span><span class="k-hint">ദ</span></div>
+            <div class="k"><span class="k-main">f</span><span class="k-hint">ഫ</span></div>
+            <div class="k"><span class="k-main">g</span><span class="k-hint">ഗ</span></div>
+            <div class="k"><span class="k-main">h</span><span class="k-hint">ഹ</span></div>
+            <div class="k"><span class="k-main">j</span><span class="k-hint">ജ</span></div>
+            <div class="k"><span class="k-main">k</span><span class="k-hint">ക</span></div>
+            <div class="k"><span class="k-main">l</span><span class="k-hint">ല</span></div>
+          </div>
+          <div class="row">
+            <div class="k fn">⇧</div>
+            <div class="k"><span class="k-main">z</span><span class="k-hint">സ</span></div>
+            <div class="k"><span class="k-main">x</span><span class="k-hint">ക്ഷ</span></div>
+            <div class="k"><span class="k-main">c</span><span class="k-hint">ച</span></div>
+            <div class="k"><span class="k-main">v</span><span class="k-hint">വ</span></div>
+            <div class="k"><span class="k-main">b</span><span class="k-hint">ബ</span></div>
+            <div class="k"><span class="k-main">n</span><span class="k-hint">ന</span></div>
+            <div class="k"><span class="k-main">m</span><span class="k-hint">മ</span></div>
+            <div class="k fn">⌫</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Handwriting -->
+      <div id="kbp-handwriting" style="display:none;">
+        <div class="hw-panel">
+          <div class="hw-panel-char">മ</div>
+          <div class="hw-panel-text">
+            <div class="hw-panel-name">Draw your character</div>
+            <div class="hw-panel-sub">Trace with your finger on screen</div>
+          </div>
+          <div class="hw-panel-icon">✏️</div>
+        </div>
+      </div>
+
+      <!-- Native Malayalam -->
+      <div id="kbp-native" style="display:none;">
+        <div class="kb kb-dark">
+          <div class="row">
+            <div class="k"><span class="k-main" style="font-size:12px;">അ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ആ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ഇ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ഈ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ഉ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ഊ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ഋ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">എ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ഏ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ഐ</span></div>
+          </div>
+          <div class="row">
+            <div class="k"><span class="k-main" style="font-size:12px;">ക</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ഖ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ഗ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ഘ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ച</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ജ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ന</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">മ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ര</span></div>
+          </div>
+          <div class="row">
+            <div class="k fn">⇧</div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ത</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ദ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">പ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ബ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">ല</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">വ</span></div>
+            <div class="k"><span class="k-main" style="font-size:12px;">സ</span></div>
+            <div class="k fn">⌫</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end #s1-kb-wrap -->
+
+    <button class="cta" id="cta-s1" style="margin-top:10px;" onclick="goToScreen(2)">Continue</button>
+
+  </div><!-- end .kb-panel -->
 
 </div>
 
@@ -1013,20 +1090,15 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
   </div><!-- end .s3-scroll -->
 
   <!-- Fixed bottom panel: toggle btn + keyboard + CTA -->
-  <div class="s3-kb-panel">
+  <div class="kb-panel">
 
-    <button class="kb-toggle-btn" id="kb-toggle-btn" onclick="toggleKbPreview()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="kb-btn-icon">
-        <rect x="2" y="6" width="20" height="12" rx="2"/>
-        <line x1="6" y1="10" x2="6" y2="10"/><line x1="10" y1="10" x2="10" y2="10"/>
-        <line x1="14" y1="10" x2="14" y2="10"/><line x1="18" y1="10" x2="18" y2="10"/>
-        <line x1="6" y1="14" x2="18" y2="14"/>
-      </svg>
-      <span id="kb-btn-label">Hide keyboard</span>
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="kb-btn-chevron">
-        <polyline points="6 9 12 15 18 9"/>
-      </svg>
-    </button>
+    <div style="display:flex; justify-content:center; margin-bottom:10px;">
+      <button class="kb-fab" id="kb-fab-s3" onclick="toggleKbPreview()" aria-label="Hide keyboard">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="fab-s3-icon">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+    </div>
 
     <div class="kb-live-wrap" id="kb-live-wrap">
 
@@ -1070,7 +1142,7 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
 
     <button class="cta" style="margin-top:10px;">Start typing</button>
 
-  </div><!-- end .s3-kb-panel -->
+  </div><!-- end .kb-panel -->
 
 </div>
 
@@ -1087,8 +1159,23 @@ function goToScreen(n) {
 let currentLayout = 'manglish';
 function pickLayout(id) {
   if (currentLayout === id) return;
+  // Update card selection
   document.querySelectorAll('#slide-1 .feat-card, #slide-1 .opt-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('card-' + id).classList.add('selected');
+  // Switch keyboard panel
+  document.getElementById('kbp-' + currentLayout).style.display = 'none';
+  const next = document.getElementById('kbp-' + id);
+  next.style.display = '';
+  next.classList.remove('kbp-animate');
+  void next.offsetWidth; // reflow to restart animation
+  next.classList.add('kbp-animate');
+  // Make sure panel is visible
+  const wrap = document.getElementById('s1-kb-wrap');
+  if (wrap.classList.contains('kb-hidden')) {
+    wrap.classList.remove('kb-hidden');
+    const icon = document.getElementById('fab-s1-icon');
+    if (icon) icon.style.transform = '';
+  }
   currentLayout = id;
 }
 
@@ -1120,14 +1207,18 @@ function toggleMode() {
   document.getElementById('icon-sun').style.display  = light ? ''      : 'none';
 }
 
+function toggleKbS1() {
+  const wrap = document.getElementById('s1-kb-wrap');
+  const icon = document.getElementById('fab-s1-icon');
+  const hidden = wrap.classList.toggle('kb-hidden');
+  icon.style.transform = hidden ? 'rotate(180deg)' : '';
+}
+
 function toggleKbPreview() {
-  const wrap    = document.getElementById('kb-live-wrap');
-  const label   = document.getElementById('kb-btn-label');
-  const chevron = document.getElementById('kb-btn-chevron');
-  const hidden  = wrap.classList.toggle('kb-hidden');
-  label.textContent = hidden ? 'Show keyboard' : 'Hide keyboard';
-  chevron.style.transform = hidden ? 'rotate(180deg)' : '';
-  chevron.style.transition = 'transform 0.3s';
+  const wrap = document.getElementById('kb-live-wrap');
+  const icon = document.getElementById('fab-s3-icon');
+  const hidden = wrap.classList.toggle('kb-hidden');
+  icon.style.transform = hidden ? 'rotate(180deg)' : '';
 }
 
 function toggleSetting(el, key) {
