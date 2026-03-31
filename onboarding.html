@@ -5,13 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Keyboard Setup</title>
 <style>
+:root {
+  --bg:     #0D0F12;
+  --s1:     rgba(255,255,255,0.06);
+  --s2:     rgba(255,255,255,0.10);
+  --s3:     rgba(255,255,255,0.16);
+  --t1:     rgba(255,255,255,0.90);
+  --t2:     rgba(255,255,255,0.55);
+  --t3:     rgba(255,255,255,0.30);
+  --accent: #45A375;
+  --accent-dim: rgba(69,163,117,0.18);
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-  background: #fff;
+  background: var(--bg);
+  color: var(--t1);
   min-height: 100vh;
-  color: #111;
   overflow-x: hidden;
 }
 
@@ -22,57 +34,55 @@ body {
   margin: 0 auto;
   min-height: 100vh;
   flex-direction: column;
-  padding: 60px 24px 0;
-  background: #fff;
+  padding: 60px 20px 0;
 }
 
-.slide.active {
-  display: flex;
-}
+.slide.active { display: flex; }
 
 .slide.slide-in {
-  animation: slideIn 0.38s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: slideIn 0.36s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateX(28px); }
+  from { opacity: 0; transform: translateX(24px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
 /* ── Step dots ── */
 .step-dots {
   display: flex;
+  align-items: center;
   gap: 6px;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
 }
 
 .dot {
-  height: 6px;
+  height: 5px;
   border-radius: 3px;
-  background: #e0e0e0;
-  transition: background 0.25s, width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 6px;
+  background: var(--s3);
+  transition: background 0.25s, width 0.3s cubic-bezier(0.4,0,0.2,1);
+  width: 5px;
 }
 
 .dot.active {
-  background: #111;
-  width: 22px;
+  background: var(--t1);
+  width: 20px;
 }
 
 /* ── Header ── */
-.header { margin-bottom: 36px; }
+.header { margin-bottom: 32px; }
 
 h1 {
   font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  line-height: 1.2;
-  color: #111;
+  line-height: 1.18;
+  color: var(--t1);
 }
 
 .subtitle {
-  font-size: 15px;
-  color: #999;
+  font-size: 14px;
+  color: var(--t3);
   margin-top: 6px;
 }
 
@@ -80,29 +90,63 @@ h1 {
 .label {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 0.9px;
   text-transform: uppercase;
-  color: #aaa;
+  color: var(--t3);
   margin-bottom: 10px;
 }
 
 /* ── Feature card ── */
 .feat-card {
-  border: 1.5px solid #e8e8e8;
-  border-radius: 20px;
+  background: var(--s1);
+  border-radius: 16px;
   padding: 16px;
   cursor: pointer;
-  transition: border-color 0.2s, transform 0.12s;
+  transition: background 0.2s, transform 0.12s;
   position: relative;
 }
 
 .feat-card:active { transform: scale(0.99); }
-.feat-card.selected { border-color: #111; }
+.feat-card.selected { background: var(--s2); }
 
-/* ── Keyboard (large) ── */
+/* ── Grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.opt-card {
+  background: var(--s1);
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.12s;
+  position: relative;
+}
+
+.opt-card:active { transform: scale(0.97); }
+.opt-card.selected { background: var(--s2); }
+
+/* ── Checkmark ── */
+.chk {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: scale(0.3);
+  transition: opacity 0.18s, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+}
+.chk svg { width: 9px; height: 9px; }
+.selected .chk { opacity: 1; transform: scale(1); }
+
+/* ── Keyboards (large) ── */
 .kb {
-  border-radius: 12px;
-  padding: 10px 8px 11px;
+  border-radius: 10px;
+  padding: 9px 8px 10px;
   margin-bottom: 14px;
   user-select: none;
 }
@@ -118,7 +162,7 @@ h1 {
 .k {
   flex: 1;
   max-width: 31px;
-  height: 36px;
+  height: 34px;
   border-radius: 6px;
   display: flex;
   flex-direction: column;
@@ -126,37 +170,71 @@ h1 {
   justify-content: center;
   gap: 1px;
 }
-
-.k-main { font-size: 13px; font-weight: 500; line-height: 1; }
+.k.fn { max-width: none; flex: 1.6; font-size: 11px; font-weight: 400; }
+.k-main { font-size: 12px; font-weight: 500; line-height: 1; }
 .k-hint { font-size: 6px; line-height: 1; }
 
-.k.fn {
-  max-width: none;
-  flex: 1.6;
-  font-size: 12px;
-  font-weight: 400;
+/* Dark keyboard (default, on dark surface) */
+.kb-dark { background: rgba(0,0,0,0.5); }
+.kb-dark .k { background: var(--s3); color: var(--t1); }
+.kb-dark .k-hint { color: var(--t3); }
+.kb-dark .k.fn { background: var(--s2); color: var(--t2); }
+
+/* Light keyboard */
+.kb-light { background: #B2B8C2; }
+.kb-light .k { background: #FFFFFF; color: #111; box-shadow: 0 1px 0 #8a8f96; }
+.kb-light .k-hint { color: rgba(0,0,0,0.3); }
+.kb-light .k.fn { background: #C8CDD6; color: #444; box-shadow: 0 1px 0 #8a8f96; }
+
+/* Sand keyboard */
+.kb-sand { background: #996644; }
+.kb-sand .k { background: #E2C8A2; color: #2A1800; box-shadow: 0 1px 0 #6B4422; }
+.kb-sand .k-hint { color: rgba(42,24,0,0.38); }
+.kb-sand .k.fn { background: #B8885A; color: rgba(42,24,0,0.7); box-shadow: 0 1px 0 #6B4422; }
+
+/* Midnight keyboard */
+.kb-midnight { background: #08111E; }
+.kb-midnight .k { background: #162B4A; color: #C8D8F0; }
+.kb-midnight .k-hint { color: rgba(200,216,240,0.3); }
+.kb-midnight .k.fn { background: #0E1E32; color: rgba(200,216,240,0.5); }
+
+/* ── Small keyboards ── */
+.kb-sm {
+  border-radius: 8px;
+  padding: 6px 5px;
+  margin-bottom: 10px;
 }
 
-/* ── Keyboard color themes ── */
-.kb-dark { background: #111; }
-.kb-dark .k { background: #2a2a2a; color: #fff; box-shadow: 0 2px 0 #000; }
-.kb-dark .k-hint { color: rgba(255,255,255,0.3); }
-.kb-dark .k.fn { background: #222; color: rgba(255,255,255,0.7); }
+.row-sm { display: flex; gap: 3px; margin-bottom: 3px; }
+.row-sm:last-child { margin-bottom: 0; }
 
-.kb-light { background: #ADB5BD; }
-.kb-light .k { background: #fff; color: #111; box-shadow: 0 2px 0 #888; }
-.kb-light .k-hint { color: rgba(0,0,0,0.3); }
-.kb-light .k.fn { background: #c5cdd6; color: #555; }
+.k-sm {
+  flex: 1;
+  height: 20px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  color: var(--t1);
+}
+.k-sm.fn { flex: 1.5; }
 
-.kb-sand { background: #B8895A; }
-.kb-sand .k { background: #EDD9BD; color: #2A1A0A; box-shadow: 0 2px 0 #7a5a35; }
-.kb-sand .k-hint { color: rgba(42,26,10,0.38); }
-.kb-sand .k.fn { background: #c89a6a; color: rgba(42,26,10,0.65); }
+.kb-sm-dark { background: rgba(0,0,0,0.5); }
+.kb-sm-dark .k-sm { background: var(--s3); color: var(--t2); }
+.kb-sm-dark .k-sm.fn { background: var(--s2); }
 
-.kb-midnight { background: #0D1B3E; }
-.kb-midnight .k { background: #1E3160; color: #e8efff; box-shadow: 0 2px 0 #050d20; }
-.kb-midnight .k-hint { color: rgba(232,239,255,0.3); }
-.kb-midnight .k.fn { background: #162548; color: rgba(232,239,255,0.6); }
+.kb-sm-light { background: #B2B8C2; }
+.kb-sm-light .k-sm { background: #fff; color: #222; box-shadow: 0 1px 0 #8a8f96; }
+.kb-sm-light .k-sm.fn { background: #C8CDD6; }
+
+.kb-sm-sand { background: #996644; }
+.kb-sm-sand .k-sm { background: #E2C8A2; color: #2A1800; box-shadow: 0 1px 0 #6B4422; }
+.kb-sm-sand .k-sm.fn { background: #B8885A; }
+
+.kb-sm-midnight { background: #08111E; }
+.kb-sm-midnight .k-sm { background: #162B4A; color: #C8D8F0; }
+.kb-sm-midnight .k-sm.fn { background: #0E1E32; }
 
 /* ── Card bottom row ── */
 .card-row {
@@ -165,105 +243,31 @@ h1 {
   gap: 10px;
 }
 
-.card-name { font-size: 15px; font-weight: 600; color: #111; }
-.card-sub  { font-size: 13px; color: #999; margin-top: 1px; }
+.card-name { font-size: 14px; font-weight: 600; color: var(--t1); }
+.card-sub  { font-size: 12px; color: var(--t3); margin-top: 1px; }
 .card-text { flex: 1; }
-
-.chk {
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  background: #111;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  opacity: 0;
-  transform: scale(0.3);
-  transition: opacity 0.18s, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
-}
-.chk svg { width: 10px; height: 10px; }
-.selected .chk { opacity: 1; transform: scale(1); }
 
 /* ── Example bar ── */
 .example {
-  margin-top: 12px;
+  margin-top: 10px;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 12px;
-  background: #f5f5f5;
+  padding: 8px 12px;
+  background: var(--s1);
   border-radius: 10px;
 }
 
-.ex-src   { font-size: 13px; color: #aaa; font-weight: 500; }
-.ex-arrow { font-size: 13px; color: #111; font-weight: 700; }
-.ex-dst   { font-size: 15px; color: #111; font-weight: 600; }
-
-/* ── Grid ── */
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.opt-card {
-  border: 1.5px solid #e8e8e8;
-  border-radius: 18px;
-  padding: 13px;
-  cursor: pointer;
-  transition: border-color 0.2s, transform 0.12s;
-  position: relative;
-}
-
-.opt-card:active { transform: scale(0.97); }
-.opt-card.selected { border-color: #111; }
-
-/* ── Small keyboard ── */
-.kb-sm {
-  border-radius: 9px;
-  padding: 7px 6px;
-  margin-bottom: 11px;
-}
-
-.row-sm {
-  display: flex;
-  gap: 3px;
-  margin-bottom: 3px;
-}
-.row-sm:last-child { margin-bottom: 0; }
-
-.k-sm {
-  flex: 1;
-  height: 22px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 8.5px;
-}
-.k-sm.fn { flex: 1.5; }
-
-.kb-sm-dark { background: #111; }
-.kb-sm-dark .k-sm { background: #2a2a2a; color: #fff; box-shadow: 0 1px 0 #000; }
-.kb-sm-dark .k-sm.fn { background: #222; }
-
-.kb-sm-light { background: #ADB5BD; }
-.kb-sm-light .k-sm { background: #fff; color: #111; box-shadow: 0 1px 0 #888; }
-.kb-sm-light .k-sm.fn { background: #c5cdd6; }
-
-.kb-sm-sand { background: #B8895A; }
-.kb-sm-sand .k-sm { background: #EDD9BD; color: #2A1A0A; box-shadow: 0 1px 0 #7a5a35; }
-.kb-sm-sand .k-sm.fn { background: #c89a6a; }
-
-.kb-sm-midnight { background: #0D1B3E; }
-.kb-sm-midnight .k-sm { background: #1E3160; color: #e8efff; box-shadow: 0 1px 0 #050d20; }
-.kb-sm-midnight .k-sm.fn { background: #162548; }
+.ex-src   { font-size: 13px; color: var(--t3); font-weight: 500; }
+.ex-arrow { font-size: 12px; color: var(--accent); font-weight: 700; }
+.ex-dst   { font-size: 14px; color: var(--t1); font-weight: 600; }
 
 /* ── Handwriting preview ── */
 .hw {
-  background: #111;
-  border-radius: 9px;
-  height: 72px;
-  margin-bottom: 11px;
+  background: var(--s1);
+  border-radius: 8px;
+  height: 68px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -271,101 +275,79 @@ h1 {
   overflow: hidden;
 }
 
-.hw-char { font-size: 34px; color: rgba(255,255,255,0.9); line-height: 1; }
-.hw-icon { position: absolute; bottom: 9px; right: 10px; font-size: 13px; opacity: 0.35; }
+.hw-char { font-size: 32px; color: var(--t1); line-height: 1; }
+.hw-icon { position: absolute; bottom: 8px; right: 10px; font-size: 13px; opacity: 0.3; }
 
 .opt-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
-.opt-name { font-size: 14px; font-weight: 600; color: #111; }
-.opt-sub  { font-size: 12px; color: #999; }
+.opt-name { font-size: 13px; font-weight: 600; color: var(--t1); }
+.opt-sub  { font-size: 11px; color: var(--t3); }
 
-/* ── Spacer & footer ── */
-.spacer { flex: 1; min-height: 20px; }
-
-.footer {
-  position: sticky;
-  bottom: 0;
-  padding: 8px 0 40px;
-  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, #fff 28%);
-}
-
-.hint {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  font-size: 12px;
-  color: #bbb;
-  margin-bottom: 14px;
-}
-
-.cta {
-  width: 100%;
-  padding: 17px;
-  background: #111;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 14px;
-  cursor: pointer;
-  letter-spacing: -0.2px;
-  transition: background 0.15s, transform 0.1s;
-}
-
-.cta:hover { background: #222; }
-.cta:active { transform: scale(0.985); background: #000; }
-
-/* ── Toggle rows ── */
+/* ── Settings toggles ── */
 .settings-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .setting-row {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 16px;
-  border: 1.5px solid #e8e8e8;
-  border-radius: 16px;
+  padding: 14px 14px;
+  background: var(--s1);
+  border-radius: 14px;
   cursor: pointer;
-  transition: border-color 0.18s;
+  transition: background 0.18s, transform 0.1s;
   user-select: none;
 }
 
-.setting-row:active { transform: scale(0.99); }
-.setting-row.on { border-color: #111; }
+.setting-row:active { transform: scale(0.99); background: var(--s2); }
+.setting-row.on { background: var(--s2); }
 
 .setting-icon {
-  width: 38px; height: 38px;
+  width: 36px; height: 36px;
   border-radius: 10px;
-  background: #f5f5f5;
+  background: var(--s1);
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
   flex-shrink: 0;
-  transition: background 0.18s;
+  transition: background 0.2s;
 }
 
-.setting-row.on .setting-icon { background: #111; }
-.setting-row.on .setting-icon svg { stroke: #fff; }
-.setting-row.on .setting-icon .icon-emoji { filter: brightness(10); }
+.setting-icon svg {
+  stroke: var(--t3);
+  transition: stroke 0.2s;
+}
+
+.setting-row.on .setting-icon {
+  background: var(--accent-dim);
+}
+
+.setting-row.on .setting-icon svg {
+  stroke: var(--accent);
+}
+
+.setting-row.on .setting-icon .icon-emoji {
+  filter: none;
+}
+
+.setting-icon .icon-emoji { opacity: 0.4; transition: opacity 0.2s; }
+.setting-row.on .setting-icon .icon-emoji { opacity: 1; }
 
 .setting-text { flex: 1; }
-.setting-name { font-size: 15px; font-weight: 600; color: #111; }
-.setting-desc { font-size: 13px; color: #999; margin-top: 1px; }
+.setting-name { font-size: 14px; font-weight: 600; color: var(--t1); }
+.setting-desc { font-size: 12px; color: var(--t3); margin-top: 2px; }
 
 /* iOS-style toggle */
 .toggle {
-  width: 46px; height: 28px;
-  border-radius: 14px;
-  background: #e0e0e0;
+  width: 44px; height: 26px;
+  border-radius: 13px;
+  background: var(--s2);
   position: relative;
   flex-shrink: 0;
   transition: background 0.22s cubic-bezier(0.4,0,0.2,1);
@@ -375,18 +357,58 @@ h1 {
   content: '';
   position: absolute;
   top: 3px; left: 3px;
-  width: 22px; height: 22px;
+  width: 20px; height: 20px;
   border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-  transition: transform 0.22s cubic-bezier(0.4,0,0.2,1);
+  background: rgba(255,255,255,0.35);
+  transition: transform 0.22s cubic-bezier(0.4,0,0.2,1), background 0.2s;
 }
 
-.setting-row.on .toggle { background: #111; }
-.setting-row.on .toggle::after { transform: translateX(18px); }
+.setting-row.on .toggle { background: var(--accent); }
+.setting-row.on .toggle::after {
+  transform: translateX(18px);
+  background: #fff;
+}
+
+/* ── Spacer & footer ── */
+.spacer { flex: 1; min-height: 20px; }
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 0 44px;
+  background: linear-gradient(to bottom, transparent 0%, var(--bg) 36%);
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--t3);
+  margin-bottom: 14px;
+}
+
+.cta {
+  width: 100%;
+  padding: 16px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  letter-spacing: -0.2px;
+  transition: filter 0.15s, transform 0.1s;
+}
+
+.cta:hover  { filter: brightness(1.1); }
+.cta:active { transform: scale(0.985); filter: brightness(0.95); }
 </style>
 </head>
 <body>
+
 
 <!-- ══════════════════════════════════════
      SCREEN 1 — Choose typing style
@@ -464,7 +486,6 @@ h1 {
 
   </div>
 
-  <!-- Grid options -->
   <div class="grid">
 
     <div class="opt-card" id="card-handwriting" onclick="pickLayout('handwriting')">
@@ -520,10 +541,8 @@ h1 {
 
   <div class="footer">
     <div class="hint">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="16" x2="12" y2="12"/>
-        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
       </svg>
       Settings → Keyboard to change later
     </div>
@@ -603,39 +622,18 @@ h1 {
 
   </div>
 
-  <!-- Theme grid -->
   <div class="grid">
 
     <!-- Light -->
     <div class="opt-card" id="theme-light" onclick="pickTheme('light')">
       <div class="kb-sm kb-sm-light">
-        <div class="row-sm">
-          <div class="k-sm">q</div>
-          <div class="k-sm">w</div>
-          <div class="k-sm">e</div>
-          <div class="k-sm">r</div>
-          <div class="k-sm">t</div>
-        </div>
-        <div class="row-sm">
-          <div class="k-sm">a</div>
-          <div class="k-sm">s</div>
-          <div class="k-sm">d</div>
-          <div class="k-sm">f</div>
-          <div class="k-sm">g</div>
-        </div>
-        <div class="row-sm">
-          <div class="k-sm fn">⇧</div>
-          <div class="k-sm">z</div>
-          <div class="k-sm">x</div>
-          <div class="k-sm">c</div>
-          <div class="k-sm fn">⌫</div>
-        </div>
+        <div class="row-sm"><div class="k-sm">q</div><div class="k-sm">w</div><div class="k-sm">e</div><div class="k-sm">r</div><div class="k-sm">t</div></div>
+        <div class="row-sm"><div class="k-sm">a</div><div class="k-sm">s</div><div class="k-sm">d</div><div class="k-sm">f</div><div class="k-sm">g</div></div>
+        <div class="row-sm"><div class="k-sm fn">⇧</div><div class="k-sm">z</div><div class="k-sm">x</div><div class="k-sm">c</div><div class="k-sm fn">⌫</div></div>
       </div>
       <div class="opt-row">
         <div class="opt-name">Light</div>
-        <div class="chk">
-          <svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+        <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       </div>
       <div class="opt-sub">Clean & bright</div>
     </div>
@@ -643,33 +641,13 @@ h1 {
     <!-- Sand -->
     <div class="opt-card" id="theme-sand" onclick="pickTheme('sand')">
       <div class="kb-sm kb-sm-sand">
-        <div class="row-sm">
-          <div class="k-sm">q</div>
-          <div class="k-sm">w</div>
-          <div class="k-sm">e</div>
-          <div class="k-sm">r</div>
-          <div class="k-sm">t</div>
-        </div>
-        <div class="row-sm">
-          <div class="k-sm">a</div>
-          <div class="k-sm">s</div>
-          <div class="k-sm">d</div>
-          <div class="k-sm">f</div>
-          <div class="k-sm">g</div>
-        </div>
-        <div class="row-sm">
-          <div class="k-sm fn">⇧</div>
-          <div class="k-sm">z</div>
-          <div class="k-sm">x</div>
-          <div class="k-sm">c</div>
-          <div class="k-sm fn">⌫</div>
-        </div>
+        <div class="row-sm"><div class="k-sm">q</div><div class="k-sm">w</div><div class="k-sm">e</div><div class="k-sm">r</div><div class="k-sm">t</div></div>
+        <div class="row-sm"><div class="k-sm">a</div><div class="k-sm">s</div><div class="k-sm">d</div><div class="k-sm">f</div><div class="k-sm">g</div></div>
+        <div class="row-sm"><div class="k-sm fn">⇧</div><div class="k-sm">z</div><div class="k-sm">x</div><div class="k-sm">c</div><div class="k-sm fn">⌫</div></div>
       </div>
       <div class="opt-row">
         <div class="opt-name">Sand</div>
-        <div class="chk">
-          <svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+        <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       </div>
       <div class="opt-sub">Warm & earthy</div>
     </div>
@@ -677,41 +655,21 @@ h1 {
     <!-- Midnight -->
     <div class="opt-card" id="theme-midnight" onclick="pickTheme('midnight')">
       <div class="kb-sm kb-sm-midnight">
-        <div class="row-sm">
-          <div class="k-sm">q</div>
-          <div class="k-sm">w</div>
-          <div class="k-sm">e</div>
-          <div class="k-sm">r</div>
-          <div class="k-sm">t</div>
-        </div>
-        <div class="row-sm">
-          <div class="k-sm">a</div>
-          <div class="k-sm">s</div>
-          <div class="k-sm">d</div>
-          <div class="k-sm">f</div>
-          <div class="k-sm">g</div>
-        </div>
-        <div class="row-sm">
-          <div class="k-sm fn">⇧</div>
-          <div class="k-sm">z</div>
-          <div class="k-sm">x</div>
-          <div class="k-sm">c</div>
-          <div class="k-sm fn">⌫</div>
-        </div>
+        <div class="row-sm"><div class="k-sm">q</div><div class="k-sm">w</div><div class="k-sm">e</div><div class="k-sm">r</div><div class="k-sm">t</div></div>
+        <div class="row-sm"><div class="k-sm">a</div><div class="k-sm">s</div><div class="k-sm">d</div><div class="k-sm">f</div><div class="k-sm">g</div></div>
+        <div class="row-sm"><div class="k-sm fn">⇧</div><div class="k-sm">z</div><div class="k-sm">x</div><div class="k-sm">c</div><div class="k-sm fn">⌫</div></div>
       </div>
       <div class="opt-row">
         <div class="opt-name">Midnight</div>
-        <div class="chk">
-          <svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+        <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       </div>
       <div class="opt-sub">Deep & focused</div>
     </div>
 
-    <!-- More coming -->
-    <div class="opt-card" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:default; border-style: dashed;">
-      <div style="font-size:22px; opacity:0.25;">+</div>
-      <div class="opt-name" style="color:#bbb; font-size:13px;">More soon</div>
+    <!-- More soon -->
+    <div class="opt-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:default;opacity:0.4;">
+      <div style="font-size:20px;">+</div>
+      <div style="font-size:12px;color:var(--t2);font-weight:500;">More soon</div>
     </div>
 
   </div>
@@ -720,10 +678,8 @@ h1 {
 
   <div class="footer">
     <div class="hint">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="16" x2="12" y2="12"/>
-        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
       </svg>
       More themes in Settings
     </div>
@@ -751,11 +707,12 @@ h1 {
 
   <div class="settings-list">
 
-    <!-- Number row -->
     <div class="setting-row on" onclick="toggleSetting(this)">
       <div class="setting-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="7" width="4" height="10" rx="1"/><rect x="10" y="7" width="4" height="10" rx="1"/><rect x="18" y="7" width="4" height="10" rx="1"/>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="8" width="4" height="8" rx="1.5"/>
+          <rect x="10" y="8" width="4" height="8" rx="1.5"/>
+          <rect x="18" y="8" width="4" height="8" rx="1.5"/>
         </svg>
       </div>
       <div class="setting-text">
@@ -765,22 +722,20 @@ h1 {
       <div class="toggle"></div>
     </div>
 
-    <!-- Emoji row -->
     <div class="setting-row on" onclick="toggleSetting(this)">
       <div class="setting-icon">
-        <span style="font-size:20px;">😊</span>
+        <span class="icon-emoji" style="font-size:18px;">😊</span>
       </div>
       <div class="setting-text">
         <div class="setting-name">Emoji row</div>
-        <div class="setting-desc">Quick access to frequently used emojis</div>
+        <div class="setting-desc">Quick access to frequent emojis</div>
       </div>
       <div class="toggle"></div>
     </div>
 
-    <!-- Auto-correct -->
     <div class="setting-row on" onclick="toggleSetting(this)">
       <div class="setting-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"/>
         </svg>
       </div>
@@ -791,10 +746,9 @@ h1 {
       <div class="toggle"></div>
     </div>
 
-    <!-- Swipe to type -->
     <div class="setting-row on" onclick="toggleSetting(this)">
       <div class="setting-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 12h14M12 5l7 7-7 7"/>
         </svg>
       </div>
@@ -805,11 +759,13 @@ h1 {
       <div class="toggle"></div>
     </div>
 
-    <!-- Haptic feedback -->
     <div class="setting-row" onclick="toggleSetting(this)">
       <div class="setting-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8.5 14.5A2.5 2.5 0 0011 12V6a2.5 2.5 0 00-5 0v6a2.5 2.5 0 002.5 2.5z"/><path d="M11 12a4 4 0 008 0v-2"/><line x1="8.5" y1="14.5" x2="8.5" y2="21"/><line x1="6" y1="21" x2="11" y2="21"/>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8.5 14.5A2.5 2.5 0 0011 12V6a2.5 2.5 0 00-5 0v6a2.5 2.5 0 002.5 2.5z"/>
+          <path d="M11 12a4 4 0 008 0v-2"/>
+          <line x1="8.5" y1="14.5" x2="8.5" y2="21"/>
+          <line x1="6" y1="21" x2="11" y2="21"/>
         </svg>
       </div>
       <div class="setting-text">
@@ -819,11 +775,11 @@ h1 {
       <div class="toggle"></div>
     </div>
 
-    <!-- Key sounds -->
     <div class="setting-row" onclick="toggleSetting(this)">
       <div class="setting-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <path d="M15.54 8.46a5 5 0 010 7.07"/>
         </svg>
       </div>
       <div class="setting-text">
@@ -839,12 +795,10 @@ h1 {
 
   <div class="footer">
     <div class="hint">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="16" x2="12" y2="12"/>
-        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
       </svg>
-      All settings available in Settings → Keyboard
+      All settings in Settings → Keyboard
     </div>
     <button class="cta">Start typing</button>
   </div>
@@ -853,7 +807,6 @@ h1 {
 
 
 <script>
-// ── Screen navigation ──
 function goToScreen(n) {
   const next = document.getElementById('slide-' + n);
   document.querySelectorAll('.slide').forEach(s => s.classList.remove('active', 'slide-in'));
@@ -862,9 +815,7 @@ function goToScreen(n) {
   window.scrollTo(0, 0);
 }
 
-// ── Screen 1: Layout picker ──
 let currentLayout = 'manglish';
-
 function pickLayout(id) {
   if (currentLayout === id) return;
   document.querySelectorAll('#slide-1 .feat-card, #slide-1 .opt-card').forEach(c => c.classList.remove('selected'));
@@ -872,9 +823,7 @@ function pickLayout(id) {
   currentLayout = id;
 }
 
-// ── Screen 2: Theme picker ──
 let currentTheme = 'dark';
-
 function pickTheme(id) {
   if (currentTheme === id) return;
   document.querySelectorAll('#slide-2 .feat-card, #slide-2 .opt-card').forEach(c => c.classList.remove('selected'));
@@ -882,7 +831,6 @@ function pickTheme(id) {
   currentTheme = id;
 }
 
-// ── Screen 3: Settings toggles ──
 function toggleSetting(el) {
   el.classList.toggle('on');
 }
