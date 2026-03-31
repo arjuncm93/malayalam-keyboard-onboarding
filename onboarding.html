@@ -142,14 +142,14 @@ h1 {
   transition: background 0.2s, transform 0.12s, border-color 0.2s;
   position: relative;
   border: 1.5px solid rgba(69,163,117,0.25);
-  box-shadow: 0 0 20px rgba(69,163,117,0.08), inset 0 1px 0 rgba(255,255,255,0.04);
+  box-shadow: 0 0 20px rgba(69,163,117,0.08), inset 0 1px 0 var(--s1);
 }
 
 .feat-card:active { transform: scale(0.99); }
 .feat-card.selected {
   background: var(--s2);
   border-color: var(--accent);
-  box-shadow: 0 0 24px rgba(69,163,117,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
+  box-shadow: 0 0 24px rgba(69,163,117,0.15), inset 0 1px 0 var(--s1);
 }
 
 /* ── Grid ── */
@@ -710,7 +710,7 @@ h1 {
   align-items: center;
   gap: 18px;
 }
-body.light .hw-panel { background: rgba(0,0,0,0.08); }
+body.light .hw-panel { background: rgba(0,0,0,0.06); }
 .hw-panel-char { font-size: 64px; color: var(--t1); line-height: 1; }
 .hw-panel-text { flex: 1; }
 .hw-panel-name { font-size: 16px; font-weight: 600; color: var(--t1); margin-bottom: 3px; }
@@ -824,6 +824,54 @@ body.light {
 
 body.light .kb-live-wrap { background: rgba(0,0,0,0.08); }
 body.light .kb-dark       { background: rgba(0,0,0,0.55); }
+
+/* ── Light mode fixes ── */
+body.light .card-shimmer {
+  background: linear-gradient(90deg, var(--s1) 25%, rgba(0,0,0,0.06) 50%, var(--s1) 75%);
+  background-size: 200% 100%;
+}
+body.light .feat-card {
+  border-color: rgba(69,163,117,0.3);
+  box-shadow: 0 0 20px rgba(69,163,117,0.1);
+}
+body.light .feat-card.selected {
+  box-shadow: 0 0 24px rgba(69,163,117,0.18);
+}
+body.light .opt-card {
+  border-color: rgba(0,0,0,0.08);
+}
+body.light .opt-card.selected {
+  border-color: var(--accent);
+}
+body.light .chk {
+  border-color: rgba(0,0,0,0.2);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.03);
+}
+body.light .selected .chk {
+  box-shadow: 0 0 0 3px rgba(69,163,117,0.15);
+}
+body.light .kb-panel.active::before {
+  background: linear-gradient(to bottom, transparent, var(--bg));
+}
+body.light .voice-icon {
+  background: rgba(0,0,0,0.04);
+}
+body.light .trans-demo {
+  background: rgba(0,0,0,0.04);
+}
+body.light .hw {
+  background: rgba(0,0,0,0.04);
+}
+body.light .kb-sm-dark {
+  background: rgba(0,0,0,0.06);
+}
+body.light .kb-sm-dark .k-sm {
+  background: rgba(0,0,0,0.06);
+  color: var(--t1);
+}
+body.light .kb-sm-dark .k-sm.fn {
+  background: rgba(0,0,0,0.1);
+}
 
 /* ── Mode toggle button ── */
 #mode-toggle {
@@ -1138,7 +1186,7 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
             <div style="width:22px; height:22px; border-radius:50%; background:#fff; position:absolute; top:2px; right:2px; box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
           </div>
         </div>
-        <div style="border-top:1px solid rgba(255,255,255,0.06); padding:12px 16px; display:flex; align-items:center; gap:8px;">
+        <div style="border-top:1px solid var(--s2); padding:12px 16px; display:flex; align-items:center; gap:8px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
           <div style="font-size:12px; color:var(--t3);">This will open your device settings</div>
         </div>
