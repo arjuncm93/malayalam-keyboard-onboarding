@@ -693,11 +693,12 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
 
 /* ── Screen 4: celebration ── */
 #slide-4 {
-  display: none;
   align-items: center;
   justify-content: center;
   text-align: center;
   padding: 60px 28px 60px;
+  position: relative;
+  overflow: hidden;
 }
 
 .celebration-wrap {
@@ -814,6 +815,69 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
   opacity: 0.8;
   margin-bottom: 36px;
 }
+
+/* ── Celebration stagger animations ── */
+@keyframes celFadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.cel-s1 { animation: celFadeUp 0.5s cubic-bezier(0.4,0,0.2,1) 0.05s both; }
+.cel-s2 { animation: celFadeUp 0.55s cubic-bezier(0.4,0,0.2,1) 0.35s both; }
+.cel-s3 { animation: celFadeUp 0.5s cubic-bezier(0.4,0,0.2,1) 0.7s both; }
+.cel-s4 { animation: celFadeUp 0.5s cubic-bezier(0.4,0,0.2,1) 0.95s both; }
+.cel-s5 { animation: celFadeUp 0.5s cubic-bezier(0.4,0,0.2,1) 1.2s both; }
+
+/* Malayalam phrase typing display */
+.mal-phrase-wrap {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mal-phrase {
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+.mal-phrase .cursor {
+  display: inline-block;
+  width: 2px;
+  height: 0.9em;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: cursorBlink 0.8s ease-in-out infinite;
+}
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* WhatsApp CTA glow pulse */
+.cta-wa {
+  background: #25D366 !important;
+  animation: waPulse 2s ease-in-out 1.6s infinite;
+}
+.cta-wa:hover  { filter: brightness(1.08) !important; }
+.cta-wa:active { filter: brightness(0.92) !important; }
+
+@keyframes waPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37,211,102,0.45); }
+  50%       { box-shadow: 0 0 0 14px rgba(37,211,102,0); }
+}
+
+/* Confetti canvas */
+#confetti-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.celebration-wrap { position: relative; z-index: 1; }
 </style>
 </head>
 <body>
@@ -1102,6 +1166,23 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
 
   <div class="grid">
 
+    <!-- Custom photo theme (first) -->
+    <div class="opt-card" id="theme-custom" onclick="pickTheme('custom')">
+      <div class="custom-photo-preview" id="custom-photo-thumb">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+      </div>
+      <div class="opt-row">
+        <div class="opt-name">Custom</div>
+        <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="opt-sub">Your photo</div>
+    </div>
+    <!-- Hidden file input for custom theme -->
+    <input type="file" accept="image/*" id="custom-theme-input" style="display:none;" onchange="handleCustomPhoto(event)">
+
     <!-- Light -->
     <div class="opt-card" id="theme-light" onclick="pickTheme('light')">
       <div class="kb-sm kb-sm-light">
@@ -1143,23 +1224,6 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
       </div>
       <div class="opt-sub">Deep & focused</div>
     </div>
-
-    <!-- Custom photo theme -->
-    <div class="opt-card" id="theme-custom" onclick="pickTheme('custom')">
-      <div class="custom-photo-preview" id="custom-photo-thumb">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
-          <circle cx="12" cy="13" r="4"/>
-        </svg>
-      </div>
-      <div class="opt-row">
-        <div class="opt-name">Custom</div>
-        <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      </div>
-      <div class="opt-sub">Your photo</div>
-    </div>
-    <!-- Hidden file input for custom theme -->
-    <input type="file" accept="image/*" id="custom-theme-input" style="display:none;" onchange="handleCustomPhoto(event)">
 
   </div>
 
@@ -1333,29 +1397,37 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
      ══════════════════════════════════════ -->
 <div class="slide" id="slide-4">
 
+  <!-- Confetti canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
   <div class="celebration-wrap">
 
-    <div class="setup-complete-label">Setup complete</div>
+    <div class="setup-complete-label cel-s1">Setup complete ✦</div>
 
     <!-- Animated checkmark -->
-    <div class="check-circle-wrap">
+    <div class="check-circle-wrap cel-s2">
       <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-        <!-- subtle fill bg, fades in after ring -->
         <circle class="check-bg" cx="48" cy="48" r="40"/>
-        <!-- ring draws itself -->
         <circle class="check-ring" cx="48" cy="48" r="42"/>
-        <!-- checkmark pops in -->
         <polyline class="check-mark" points="30,49 43,62 67,36"/>
       </svg>
     </div>
 
-    <div>
-      <div class="celebration-heading">You're all set!</div>
-      <div class="celebration-sub" style="margin-top:10px;">Your Malayalam keyboard is ready. Open any app and start typing.</div>
+    <!-- Malayalam phrase types out -->
+    <div class="mal-phrase-wrap cel-s3">
+      <div class="mal-phrase" id="mal-phrase"><span class="cursor"></span></div>
     </div>
 
-    <div class="celebration-actions">
-      <button class="cta" onclick="window.open('https://wa.me/', '_blank')">Open WhatsApp</button>
+    <div class="cel-s4">
+      <div class="celebration-heading">You're all set!</div>
+      <div class="celebration-sub" style="margin-top:10px;">Your Malayalam keyboard is ready. Open any app and start typing in your language.</div>
+    </div>
+
+    <div class="celebration-actions cel-s5">
+      <button class="cta cta-wa" onclick="window.open('https://wa.me/', '_blank')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white" style="display:inline-block;vertical-align:middle;margin-right:8px;margin-top:-2px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Try it on WhatsApp
+      </button>
       <button class="maybe-later" onclick="return false;">Maybe later</button>
     </div>
 
@@ -1379,8 +1451,9 @@ function goToScreen(n) {
   const backBtn = document.getElementById('back-btn');
   backBtn.style.display = (n === 2 || n === 3) ? 'flex' : 'none';
 
-  // Re-trigger checkmark animation on slide-4
+  // Re-trigger checkmark + celebration animations on slide-4
   if (n === 4) {
+    // Reset checkmark SVG animations
     const ring = next.querySelector('.check-ring');
     const mark = next.querySelector('.check-mark');
     const bg   = next.querySelector('.check-bg');
@@ -1390,6 +1463,15 @@ function goToScreen(n) {
       void el.offsetWidth;
       el.style.animation = '';
     });
+    // Reset stagger animations
+    next.querySelectorAll('.cel-s1,.cel-s2,.cel-s3,.cel-s4,.cel-s5').forEach(el => {
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = '';
+    });
+    // Start confetti + typing
+    launchConfetti();
+    startMalTyping();
   }
 }
 
@@ -1540,6 +1622,86 @@ function toggleKbPreview() {
   icon.style.transform = nowHidden ? 'rotate(180deg)' : '';
   if (nowHidden) clearTimeout(kbS3Timer);
   else resetKbS3Timer();
+}
+
+// ── Celebration: confetti ──
+let confettiRaf = null;
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth;
+  const H = canvas.offsetHeight;
+  canvas.width  = W;
+  canvas.height = H;
+
+  const colors = ['#45A375','#6DD9A8','#FFD166','#EF476F','#118AB2','#FFB703','#ffffff'];
+  const particles = Array.from({length: 90}, () => ({
+    x: Math.random() * W,
+    y: -10 - Math.random() * 60,
+    r: 3 + Math.random() * 5,
+    d: 1.5 + Math.random() * 3,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    rot: Math.random() * 360,
+    spin: (Math.random() - 0.5) * 8,
+    drift: (Math.random() - 0.5) * 1.5,
+    shape: Math.random() > 0.5 ? 'rect' : 'circle',
+  }));
+
+  let tick = 0;
+  cancelAnimationFrame(confettiRaf);
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(0, 1 - tick / 180);
+      if (p.shape === 'rect') {
+        ctx.fillRect(-p.r, -p.r * 0.5, p.r * 2, p.r);
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.r * 0.7, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      p.y += p.d;
+      p.x += p.drift;
+      p.rot += p.spin;
+    });
+    tick++;
+    if (tick < 200) confettiRaf = requestAnimationFrame(draw);
+    else ctx.clearRect(0, 0, W, H);
+  }
+  draw();
+}
+
+// ── Celebration: Malayalam typing ──
+let malTypingTimer = null;
+function startMalTyping() {
+  const el = document.getElementById('mal-phrase');
+  const phrase = 'നമസ്കാരം!';
+  const chars = [...phrase]; // handles multi-byte correctly
+  let i = 0;
+  el.innerHTML = '<span class="cursor"></span>';
+  clearInterval(malTypingTimer);
+  // Start after stagger delay (700ms)
+  setTimeout(() => {
+    malTypingTimer = setInterval(() => {
+      if (i < chars.length) {
+        // Insert char before cursor
+        el.innerHTML = chars.slice(0, i + 1).join('') + '<span class="cursor"></span>';
+        i++;
+      } else {
+        clearInterval(malTypingTimer);
+        // Remove blinking cursor after 2s
+        setTimeout(() => {
+          el.innerHTML = chars.join('');
+        }, 2000);
+      }
+    }, 80);
+  }, 750);
 }
 
 function toggleSetting(el, key) {
