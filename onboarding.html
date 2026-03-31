@@ -654,10 +654,177 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
 }
 #mode-toggle:active { transform: scale(0.9); }
 #mode-toggle svg { transition: opacity 0.15s; }
+
+/* ── Back button ── */
+#back-btn {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--s2);
+  border: none;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  color: var(--t2);
+  transition: background 0.2s, transform 0.1s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+#back-btn:active { transform: scale(0.9); background: var(--s3); }
+
+/* ── Custom photo theme preview thumbnail ── */
+.custom-photo-preview {
+  height: 62px;
+  border-radius: 8px;
+  background: var(--s1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  transition: background-color 0.2s;
+}
+
+/* ── Screen 4: celebration ── */
+#slide-4 {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 28px 60px;
+}
+
+.celebration-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  width: 100%;
+}
+
+/* Animated checkmark circle */
+.check-circle-wrap {
+  width: 96px;
+  height: 96px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.check-circle-wrap svg {
+  width: 96px;
+  height: 96px;
+  overflow: visible;
+}
+
+/* Circle stroke draw animation */
+.check-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 264;
+  stroke-dashoffset: 264;
+  transform-origin: center;
+  transform: rotate(-90deg);
+  animation: drawRing 0.65s cubic-bezier(0.4, 0, 0.2, 1) 0.15s forwards;
+}
+
+@keyframes drawRing {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Background circle fill (subtle) */
+.check-bg {
+  fill: rgba(69, 163, 117, 0.12);
+  r: 40;
+  animation: fadeInBg 0.3s ease 0.6s both;
+}
+
+@keyframes fadeInBg {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Checkmark path */
+.check-mark {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transform-origin: center;
+  transform: scale(0.5);
+  animation: popCheck 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) 0.72s forwards;
+}
+
+@keyframes popCheck {
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Celebration text */
+.celebration-heading {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  color: var(--t1);
+  line-height: 1.18;
+}
+
+.celebration-sub {
+  font-size: 15px;
+  color: var(--t2);
+  line-height: 1.55;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.celebration-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.maybe-later {
+  font-size: 14px;
+  color: var(--t3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s;
+}
+.maybe-later:hover { color: var(--t2); }
+
+/* Setup complete label for slide-4 (replaces dots) */
+.setup-complete-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.8;
+  margin-bottom: 36px;
+}
 </style>
 </head>
 <body>
 
+
+<!-- Back button (persistent, hidden on screen 1 and 4) -->
+<button id="back-btn" onclick="goBack()" aria-label="Go back">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="15 18 9 12 15 6"/>
+  </svg>
+</button>
 
 <!-- Mode toggle (persistent across screens) -->
 <button id="mode-toggle" onclick="toggleMode()" aria-label="Toggle light/dark mode">
@@ -685,6 +852,7 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
 
     <div class="step-dots">
       <div class="dot active"></div>
+      <div class="dot"></div>
       <div class="dot"></div>
       <div class="dot"></div>
     </div>
@@ -870,6 +1038,7 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
     <div class="dot"></div>
     <div class="dot active"></div>
     <div class="dot"></div>
+    <div class="dot"></div>
   </div>
 
   <div class="header">
@@ -975,11 +1144,22 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
       <div class="opt-sub">Deep & focused</div>
     </div>
 
-    <!-- More soon -->
-    <div class="opt-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:default;opacity:0.4;">
-      <div style="font-size:20px;">+</div>
-      <div style="font-size:12px;color:var(--t2);font-weight:500;">More soon</div>
+    <!-- Custom photo theme -->
+    <div class="opt-card" id="theme-custom" onclick="pickTheme('custom')">
+      <div class="custom-photo-preview" id="custom-photo-thumb">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+      </div>
+      <div class="opt-row">
+        <div class="opt-name">Custom</div>
+        <div class="chk"><svg viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.8,7 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="opt-sub">Your photo</div>
     </div>
+    <!-- Hidden file input for custom theme -->
+    <input type="file" accept="image/*" id="custom-theme-input" style="display:none;" onchange="handleCustomPhoto(event)">
 
   </div>
 
@@ -1010,6 +1190,7 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
       <div class="dot"></div>
       <div class="dot"></div>
       <div class="dot active"></div>
+      <div class="dot"></div>
     </div>
 
     <div class="header">
@@ -1092,7 +1273,7 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
   <!-- Fixed bottom panel: toggle btn + keyboard + CTA -->
   <div class="kb-panel">
 
-    <div style="display:flex; justify-content:center; margin-bottom:10px;">
+    <div style="display:flex; justify-content:center; margin-bottom:10px;" id="fab-s3-wrap" hidden>
       <button class="kb-fab" id="kb-fab-s3" onclick="toggleKbPreview()" aria-label="Hide keyboard">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="fab-s3-icon">
           <polyline points="6 9 12 15 18 9"/>
@@ -1100,7 +1281,7 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
       </button>
     </div>
 
-    <div class="kb-live-wrap" id="kb-live-wrap">
+    <div class="kb-live-wrap kb-hidden" id="kb-live-wrap">
 
       <div class="kb-collapsible visible" id="kb-emoji-row">
         <div class="kb-live-row" style="margin-bottom:8px;">
@@ -1140,20 +1321,80 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
 
     </div><!-- end .kb-live-wrap -->
 
-    <button class="cta" style="margin-top:10px;">Start typing</button>
+    <button class="cta" style="margin-top:10px;" onclick="goToScreen(4)">Start typing</button>
 
   </div><!-- end .kb-panel -->
 
 </div>
 
 
+<!-- ══════════════════════════════════════
+     SCREEN 4 — Celebration / You're all set
+     ══════════════════════════════════════ -->
+<div class="slide" id="slide-4">
+
+  <div class="celebration-wrap">
+
+    <div class="setup-complete-label">Setup complete</div>
+
+    <!-- Animated checkmark -->
+    <div class="check-circle-wrap">
+      <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+        <!-- subtle fill bg, fades in after ring -->
+        <circle class="check-bg" cx="48" cy="48" r="40"/>
+        <!-- ring draws itself -->
+        <circle class="check-ring" cx="48" cy="48" r="42"/>
+        <!-- checkmark pops in -->
+        <polyline class="check-mark" points="30,49 43,62 67,36"/>
+      </svg>
+    </div>
+
+    <div>
+      <div class="celebration-heading">You're all set!</div>
+      <div class="celebration-sub" style="margin-top:10px;">Your Malayalam keyboard is ready. Open any app and start typing.</div>
+    </div>
+
+    <div class="celebration-actions">
+      <button class="cta" onclick="window.open('https://wa.me/', '_blank')">Open WhatsApp</button>
+      <button class="maybe-later" onclick="return false;">Maybe later</button>
+    </div>
+
+  </div>
+
+</div>
+
+
 <script>
+let currentScreen = 1;
+
 function goToScreen(n) {
   const next = document.getElementById('slide-' + n);
   document.querySelectorAll('.slide').forEach(s => s.classList.remove('active', 'slide-in'));
   next.classList.add('active', 'slide-in');
   next.addEventListener('animationend', () => next.classList.remove('slide-in'), { once: true });
   window.scrollTo(0, 0);
+  currentScreen = n;
+
+  // Show back button on screens 2 & 3 only
+  const backBtn = document.getElementById('back-btn');
+  backBtn.style.display = (n === 2 || n === 3) ? 'flex' : 'none';
+
+  // Re-trigger checkmark animation on slide-4
+  if (n === 4) {
+    const ring = next.querySelector('.check-ring');
+    const mark = next.querySelector('.check-mark');
+    const bg   = next.querySelector('.check-bg');
+    [ring, mark, bg].forEach(el => {
+      if (!el) return;
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = '';
+    });
+  }
+}
+
+function goBack() {
+  if (currentScreen > 1) goToScreen(currentScreen - 1);
 }
 
 let currentLayout = 'manglish';
@@ -1175,21 +1416,51 @@ function pickLayout(id) {
     currentLayout = id;
   }
 
-  // Reveal keyboard on first tap
+  // Reveal keyboard + Continue button on first tap
   const wrap = document.getElementById('s1-kb-wrap');
   if (wrap.classList.contains('kb-hidden')) {
     wrap.classList.remove('kb-hidden');
     document.getElementById('fab-s1-wrap').hidden = false;
     kbS1EverShown = true;
   }
+  revealCta();
 }
 
 let currentTheme = 'dark';
 function pickTheme(id) {
+  if (id === 'custom') {
+    // Always trigger file picker on tap; select the card only after a photo is chosen
+    document.getElementById('custom-theme-input').click();
+    return;
+  }
   if (currentTheme === id) return;
   document.querySelectorAll('#slide-2 .feat-card, #slide-2 .opt-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('theme-' + id).classList.add('selected');
   currentTheme = id;
+}
+
+function handleCustomPhoto(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+
+  // Set thumbnail background in the card
+  const thumb = document.getElementById('custom-photo-thumb');
+  thumb.style.backgroundImage = 'url(' + url + ')';
+
+  // Set the featured card (theme-dark) keyboard preview background
+  const featCard = document.getElementById('theme-dark');
+  const kb = featCard.querySelector('.kb');
+  if (kb) {
+    kb.style.backgroundImage = 'url(' + url + ')';
+    kb.style.backgroundSize = 'cover';
+    kb.style.backgroundPosition = 'center';
+  }
+
+  // Select the custom card
+  document.querySelectorAll('#slide-2 .feat-card, #slide-2 .opt-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('theme-custom').classList.add('selected');
+  currentTheme = 'custom';
 }
 
 // ── Screen 1 CTA: reveal after 5s or on scroll to bottom ──
@@ -1220,11 +1491,20 @@ function toggleKbS1() {
   icon.style.transform = nowHidden ? 'rotate(180deg)' : '';
 }
 
+function revealKbS3() {
+  const wrap = document.getElementById('kb-live-wrap');
+  if (wrap.classList.contains('kb-hidden')) {
+    wrap.classList.remove('kb-hidden');
+    document.getElementById('fab-s3-wrap').hidden = false;
+    document.getElementById('fab-s3-icon').style.transform = '';
+  }
+}
+
 function toggleKbPreview() {
   const wrap = document.getElementById('kb-live-wrap');
   const icon = document.getElementById('fab-s3-icon');
-  const hidden = wrap.classList.toggle('kb-hidden');
-  icon.style.transform = hidden ? 'rotate(180deg)' : '';
+  const nowHidden = wrap.classList.toggle('kb-hidden');
+  icon.style.transform = nowHidden ? 'rotate(180deg)' : '';
 }
 
 function toggleSetting(el, key) {
@@ -1233,11 +1513,13 @@ function toggleSetting(el, key) {
     const row = document.getElementById('kb-num-row');
     row.classList.toggle('visible', el.classList.contains('on'));
     row.classList.toggle('hidden',  !el.classList.contains('on'));
+    revealKbS3();
   }
   if (key === 'emojirow') {
     const row = document.getElementById('kb-emoji-row');
     row.classList.toggle('visible', el.classList.contains('on'));
     row.classList.toggle('hidden',  !el.classList.contains('on'));
+    revealKbS3();
   }
 }
 </script>
