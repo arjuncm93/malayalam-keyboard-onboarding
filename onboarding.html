@@ -675,13 +675,13 @@ body.light .hw-panel { background: rgba(0,0,0,0.08); }
 }
 
 /* ── Screen 1 CTA: hidden until 5s or scroll-to-bottom ── */
-#cta-s1 {
+#cta-s1, #cta-s2 {
   opacity: 0;
   transform: translateY(10px);
   pointer-events: none;
   transition: opacity 0.45s, transform 0.45s;
 }
-#cta-s1.revealed {
+#cta-s1.revealed, #cta-s2.revealed {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
@@ -1302,7 +1302,7 @@ body.light .kb-dark       { background: rgba(0,0,0,0.55); }
       </svg>
       More themes in Settings
     </div>
-    <button class="cta" onclick="goToScreen(3)">Continue</button>
+    <button class="cta" id="cta-s2" onclick="goToScreen(3)">Continue</button>
   </div>
 
 </div>
@@ -1517,6 +1517,14 @@ function goToScreen(n) {
   const backBtn = document.getElementById('back-btn');
   backBtn.style.display = (n === 2 || n === 3) ? 'flex' : 'none';
 
+  // Screen 2: start 5s timer for Continue button
+  if (n === 2) {
+    clearTimeout(ctaS2Timer);
+    if (!ctaS2Revealed) {
+      ctaS2Timer = setTimeout(revealCtaS2, 5000);
+    }
+  }
+
   // Re-trigger checkmark + celebration animations on slide-4
   if (n === 4) {
     // Reset checkmark SVG animations
@@ -1578,14 +1586,23 @@ function pickLayout(id) {
 let currentTheme = 'dark';
 function pickTheme(id) {
   if (id === 'custom') {
-    // Always trigger file picker on tap; select the card only after a photo is chosen
     document.getElementById('custom-theme-input').click();
     return;
   }
-  if (currentTheme === id) return;
+  if (currentTheme === id) { revealCtaS2(); return; }
   document.querySelectorAll('#slide-2 .feat-card, #slide-2 .opt-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('theme-' + id).classList.add('selected');
   currentTheme = id;
+  revealCtaS2();
+}
+
+let ctaS2Revealed = false;
+let ctaS2Timer = null;
+function revealCtaS2() {
+  if (ctaS2Revealed) return;
+  ctaS2Revealed = true;
+  clearTimeout(ctaS2Timer);
+  document.getElementById('cta-s2').classList.add('revealed');
 }
 
 function handleCustomPhoto(event) {
@@ -1610,6 +1627,7 @@ function handleCustomPhoto(event) {
   document.querySelectorAll('#slide-2 .feat-card, #slide-2 .opt-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('theme-custom').classList.add('selected');
   currentTheme = 'custom';
+  revealCtaS2();
 }
 
 // ── Screen 1 CTA: reveal after 5s or on scroll to bottom ──
