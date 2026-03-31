@@ -320,6 +320,70 @@ h1 {
 
 .cta:hover { background: #222; }
 .cta:active { transform: scale(0.985); background: #000; }
+
+/* ── Toggle rows ── */
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: border-color 0.18s;
+  user-select: none;
+}
+
+.setting-row:active { transform: scale(0.99); }
+.setting-row.on { border-color: #111; }
+
+.setting-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: #f5f5f5;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  transition: background 0.18s;
+}
+
+.setting-row.on .setting-icon { background: #111; }
+.setting-row.on .setting-icon svg { stroke: #fff; }
+.setting-row.on .setting-icon .icon-emoji { filter: brightness(10); }
+
+.setting-text { flex: 1; }
+.setting-name { font-size: 15px; font-weight: 600; color: #111; }
+.setting-desc { font-size: 13px; color: #999; margin-top: 1px; }
+
+/* iOS-style toggle */
+.toggle {
+  width: 46px; height: 28px;
+  border-radius: 14px;
+  background: #e0e0e0;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  transition: transform 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+.setting-row.on .toggle { background: #111; }
+.setting-row.on .toggle::after { transform: translateX(18px); }
 </style>
 </head>
 <body>
@@ -331,6 +395,7 @@ h1 {
 
   <div class="step-dots">
     <div class="dot active"></div>
+    <div class="dot"></div>
     <div class="dot"></div>
   </div>
 
@@ -476,6 +541,7 @@ h1 {
   <div class="step-dots">
     <div class="dot"></div>
     <div class="dot active"></div>
+    <div class="dot"></div>
   </div>
 
   <div class="header">
@@ -661,7 +727,126 @@ h1 {
       </svg>
       More themes in Settings
     </div>
-    <button class="cta" id="cta-s2">Start typing</button>
+    <button class="cta" onclick="goToScreen(3)">Continue</button>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════
+     SCREEN 3 — Keyboard settings
+     ══════════════════════════════════════ -->
+<div class="slide" id="slide-3">
+
+  <div class="step-dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot active"></div>
+  </div>
+
+  <div class="header">
+    <h1>Set up your<br>keyboard</h1>
+    <div class="subtitle">Toggle features on or off</div>
+  </div>
+
+  <div class="settings-list">
+
+    <!-- Number row -->
+    <div class="setting-row on" onclick="toggleSetting(this)">
+      <div class="setting-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="4" height="10" rx="1"/><rect x="10" y="7" width="4" height="10" rx="1"/><rect x="18" y="7" width="4" height="10" rx="1"/>
+        </svg>
+      </div>
+      <div class="setting-text">
+        <div class="setting-name">Number row</div>
+        <div class="setting-desc">Show 1–0 above the letters</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+
+    <!-- Emoji row -->
+    <div class="setting-row on" onclick="toggleSetting(this)">
+      <div class="setting-icon">
+        <span style="font-size:20px;">😊</span>
+      </div>
+      <div class="setting-text">
+        <div class="setting-name">Emoji row</div>
+        <div class="setting-desc">Quick access to frequently used emojis</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+
+    <!-- Auto-correct -->
+    <div class="setting-row on" onclick="toggleSetting(this)">
+      <div class="setting-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div class="setting-text">
+        <div class="setting-name">Auto-correct</div>
+        <div class="setting-desc">Fix typos as you type</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+
+    <!-- Swipe to type -->
+    <div class="setting-row on" onclick="toggleSetting(this)">
+      <div class="setting-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </div>
+      <div class="setting-text">
+        <div class="setting-name">Swipe to type</div>
+        <div class="setting-desc">Slide across keys to form words</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+
+    <!-- Haptic feedback -->
+    <div class="setting-row" onclick="toggleSetting(this)">
+      <div class="setting-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8.5 14.5A2.5 2.5 0 0011 12V6a2.5 2.5 0 00-5 0v6a2.5 2.5 0 002.5 2.5z"/><path d="M11 12a4 4 0 008 0v-2"/><line x1="8.5" y1="14.5" x2="8.5" y2="21"/><line x1="6" y1="21" x2="11" y2="21"/>
+        </svg>
+      </div>
+      <div class="setting-text">
+        <div class="setting-name">Haptic feedback</div>
+        <div class="setting-desc">Vibrate on each keypress</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+
+    <!-- Key sounds -->
+    <div class="setting-row" onclick="toggleSetting(this)">
+      <div class="setting-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
+        </svg>
+      </div>
+      <div class="setting-text">
+        <div class="setting-name">Key sounds</div>
+        <div class="setting-desc">Play a click on each keypress</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="footer">
+    <div class="hint">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="16" x2="12" y2="12"/>
+        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      </svg>
+      All settings available in Settings → Keyboard
+    </div>
+    <button class="cta">Start typing</button>
   </div>
 
 </div>
@@ -695,6 +880,11 @@ function pickTheme(id) {
   document.querySelectorAll('#slide-2 .feat-card, #slide-2 .opt-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('theme-' + id).classList.add('selected');
   currentTheme = id;
+}
+
+// ── Screen 3: Settings toggles ──
+function toggleSetting(el) {
+  el.classList.toggle('on');
 }
 </script>
 
