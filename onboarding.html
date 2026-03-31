@@ -508,10 +508,60 @@ h1 {
 }
 .kb-collapsible.visible { max-height: 44px; opacity: 1; }
 .kb-collapsible.hidden  { max-height: 0;    opacity: 0; }
+
+/* ── Light mode overrides ── */
+body.light {
+  --bg:     #F2F2F7;
+  --s1:     rgba(0,0,0,0.04);
+  --s2:     rgba(0,0,0,0.07);
+  --s3:     rgba(0,0,0,0.12);
+  --t1:     rgba(0,0,0,0.88);
+  --t2:     rgba(0,0,0,0.55);
+  --t3:     rgba(0,0,0,0.32);
+  --accent-dim: rgba(69,163,117,0.14);
+}
+
+body.light .kb-live-wrap { background: rgba(0,0,0,0.08); }
+body.light .kb-dark       { background: rgba(0,0,0,0.55); }
+
+/* ── Mode toggle button ── */
+#mode-toggle {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--s2);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+  transition: background 0.2s, transform 0.1s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+#mode-toggle:active { transform: scale(0.9); }
+#mode-toggle svg { transition: opacity 0.15s; }
 </style>
 </head>
 <body>
 
+
+<!-- Mode toggle (persistent across screens) -->
+<button id="mode-toggle" onclick="toggleMode()" aria-label="Toggle light/dark mode">
+  <!-- Moon icon (shown in dark mode) -->
+  <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+  </svg>
+  <!-- Sun icon (shown in light mode) -->
+  <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+    <circle cx="12" cy="12" r="5"/>
+    <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+    <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+  </svg>
+</button>
 
 <!-- ══════════════════════════════════════
      SCREEN 1 — Choose typing style
@@ -973,6 +1023,12 @@ function pickTheme(id) {
   document.querySelectorAll('#slide-2 .feat-card, #slide-2 .opt-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('theme-' + id).classList.add('selected');
   currentTheme = id;
+}
+
+function toggleMode() {
+  const light = document.body.classList.toggle('light');
+  document.getElementById('icon-moon').style.display = light ? 'none'  : '';
+  document.getElementById('icon-sun').style.display  = light ? ''      : 'none';
 }
 
 function toggleSetting(el, key) {
